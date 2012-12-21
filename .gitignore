@@ -1,0 +1,11 @@
+bin/
+obj/
+csx/
+_UpgradeReport_Files
+TestResults
+_ReSharper.*
+*.suo
+*.user
+Config/*.config
+Config/*.nlog
+_TeamCity.*

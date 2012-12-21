@@ -37,7 +37,6 @@ namespace Amazon.DynamoDB.DocumentModel
         {
             IsDone = false;
             NextKey = null;
-            Matches = new List<Document>();
             SearchMethod = searchMethod;
         }
 
@@ -96,11 +95,6 @@ namespace Amazon.DynamoDB.DocumentModel
         public Key NextKey { get; internal set; }
 
         /// <summary>
-        /// List of currently found items
-        /// </summary>
-        public List<Document> Matches { get; internal set; }
-
-        /// <summary>
         /// Gets the total number of items that match the search parameters
         /// 
         /// If IsDone is true, returns Matches.Count
@@ -129,6 +123,8 @@ namespace Amazon.DynamoDB.DocumentModel
             return GetNextSetHelper(false);
         }
 
+        public int MatchCount { get; set; }
+
         private List<Document> GetNextSetHelper(bool isAsync)
         {
             List<Document> ret = new List<Document>();
@@ -153,7 +149,7 @@ namespace Amazon.DynamoDB.DocumentModel
                         {
                             Document doc = Document.FromAttributeMap(item);
                             ret.Add(doc);
-                            Matches.Add(doc);
+                            MatchCount++;
                         }
                         NextKey = scanResult.LastEvaluatedKey;
                         if (NextKey == null)
@@ -181,7 +177,7 @@ namespace Amazon.DynamoDB.DocumentModel
                         {
                             Document doc = Document.FromAttributeMap(item);
                             ret.Add(doc);
-                            Matches.Add(doc);
+                            MatchCount++;
                         }
                         NextKey = queryResult.LastEvaluatedKey;
                         if (NextKey == null)
@@ -289,7 +285,7 @@ namespace Amazon.DynamoDB.DocumentModel
         {
             if (IsDone)
             {
-                return Matches.Count;
+                return MatchCount;
             }
             else
             {
@@ -309,7 +305,7 @@ namespace Amazon.DynamoDB.DocumentModel
                                 .WithBeforeRequestHandler(SourceTable.UserAgentRequestEventHandlerSync) as ScanRequest;
                             scanReq.ScanFilter = (ScanFilter)Filter;
                             ScanResult scanResult = SourceTable.DDBClient.Scan(scanReq).ScanResult;
-                            count = Matches.Count + scanResult.Count;
+                            count = MatchCount + scanResult.Count;
                             return count;
                         case SearchType.Query:
                             QueryRequest queryReq = new QueryRequest()
@@ -322,7 +318,7 @@ namespace Amazon.DynamoDB.DocumentModel
                                 .WithTableName(TableName)
                                 .WithBeforeRequestHandler(SourceTable.UserAgentRequestEventHandlerSync) as QueryRequest;
                             QueryResult queryResult = SourceTable.DDBClient.Query(queryReq).QueryResult;
-                            count = Matches.Count + queryResult.Count;
+                            count = MatchCount + queryResult.Count;
                             return count;
                         default:
                             throw new InvalidOperationException("Unknown Search Method");
