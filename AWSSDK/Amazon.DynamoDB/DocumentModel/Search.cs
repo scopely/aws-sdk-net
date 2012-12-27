@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using Amazon.DynamoDB.Model;
 using Amazon.Runtime;
 
@@ -111,6 +111,10 @@ namespace Amazon.DynamoDB.DocumentModel
 
         #endregion
 
+        private const int RETRY_COUNT = 10;
+        private const int INITIAL_BACKOFF_MS = 2;
+        private const int MAXIMUM_BACKOFF_MS = 10000;
+
 
         #region Public methods
 
@@ -120,7 +124,43 @@ namespace Amazon.DynamoDB.DocumentModel
         /// <returns>Next set of Documents matching the search parameters</returns>
         public List<Document> GetNextSet()
         {
-            return GetNextSetHelper(false);
+            var retryCount = 0;
+
+            while (true)
+            {
+                try
+                {
+                    return GetNextSetHelper(false);
+                }
+                catch(ProvisionedThroughputExceededException)
+                {
+                    if(ShouldRethrow(retryCount))
+                    {
+                        throw;
+                    }
+                }
+                catch(AmazonServiceException)
+                {
+                    if (ShouldRethrow(retryCount))
+                    {
+                        throw;
+                    }
+                }
+
+                retryCount++;
+            }
+        }
+
+        private bool ShouldRethrow(int retryCount)
+        {
+            if(retryCount == RETRY_COUNT)
+            {
+                return true;
+            }
+
+            Thread.Sleep((int)Math.Min(Math.Pow(2, retryCount) * INITIAL_BACKOFF_MS, MAXIMUM_BACKOFF_MS));
+
+            return false;
         }
 
         public int MatchCount { get; set; }
