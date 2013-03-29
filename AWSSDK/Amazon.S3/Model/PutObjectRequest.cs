@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  *  this file except in compliance with the License. A copy of the License is located at
  *
@@ -23,6 +23,7 @@
 using System;
 using System.Xml.Serialization;
 using System.Collections.Specialized;
+using Amazon.Util;
 
 namespace Amazon.S3.Model
 {
@@ -42,8 +43,6 @@ namespace Amazon.S3.Model
         private string contentType;
         private string contentBody;
         internal NameValueCollection metaData;
-        private int timeout = 0;
-        private int readWriteTimeout = 0;
         private S3StorageClass storageClass;
         private bool autoCloseStream = true;
         private ServerSideEncryptionMethod encryption;
@@ -496,43 +495,6 @@ namespace Amazon.S3.Model
 
         #region Timeout
 
-        internal override bool SupportTimeout
-        {
-            get { return true; }
-        }
-
-        /// <summary>
-        /// Custom Timeout property (in milliseconds).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The value of this property is assigned to the
-        /// Timeout property of the HTTPWebRequest object used
-        /// for S3 PUT Object requests.
-        /// </para>
-        /// <para>
-        /// Please set the timeout only if you are certain that
-        /// the file will not be transferred within the default intervals
-        /// for an HttpWebRequest.
-        /// </para>
-        /// <para>
-        /// A value less than or equal to 0 will be silently ignored
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public int Timeout
-        {
-            get { return this.timeout; }
-            set
-            {
-                if (value > 0 || value == System.Threading.Timeout.Infinite)
-                {
-                    this.timeout = value;
-                }
-            }
-        }
-
         /// <summary>
         /// Sets a custom Timeout property (in milliseconds).
         /// </summary>
@@ -555,7 +517,7 @@ namespace Amazon.S3.Model
         /// <returns>this instance</returns>
         /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
         /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public PutObjectRequest WithTimeout(int timeout)
+        new public PutObjectRequest WithTimeout(int timeout)
         {
             Timeout = timeout;
             return this;
@@ -564,32 +526,6 @@ namespace Amazon.S3.Model
         #endregion
 
         #region ReadWriteTimeout
-
-        /// <summary>
-        /// Custom ReadWriteTimeout property (in milliseconds).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The value of this property is assigned to the
-        /// ReadWriteTimeout property of the HTTPWebRequest object
-        /// used for S3 PUT Object requests.
-        /// </para>
-        /// <para>
-        /// A value less than or equal to 0 will be silently ignored
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        public int ReadWriteTimeout
-        {
-            get { return this.readWriteTimeout; }
-            set
-            {
-                if (value > 0 || value == System.Threading.Timeout.Infinite)
-                {
-                    this.readWriteTimeout = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Sets a custom ReadWriteTimeout property (in milliseconds). 
@@ -607,15 +543,10 @@ namespace Amazon.S3.Model
         /// <param name="readWriteTimeout">ReadWriteTimeout value</param>
         /// <returns>this instance</returns>
         /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        public PutObjectRequest WithReadWriteTimeout(int readWriteTimeout)
+        new public PutObjectRequest WithReadWriteTimeout(int readWriteTimeout)
         {
             ReadWriteTimeout = readWriteTimeout;
             return this;
-        }
-
-        internal override bool SupportReadWriteTimeout
-        {
-            get { return true; }
         }
 
         #endregion
@@ -745,23 +676,7 @@ namespace Amazon.S3.Model
         /// <param name="total">The total number of bytes to be transferred</param>
         internal override void OnRaiseProgressEvent(long incrementTransferred, long transferred, long total)
         {
-            // Make a temporary copy of the event to avoid the possibility of
-            // a race condition if the last and only subscriber unsubscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<PutObjectProgressArgs> handler = PutObjectProgressEvent;
-            try
-            {
-                // Event will be null if there are no subscribers
-                if (handler != null)
-                {
-                    // This automatically calls all subscribers sequentially
-                    // http://msdn.microsoft.com/en-us/library/ms173172%28VS.80%29.aspx
-                    handler(this, new PutObjectProgressArgs(incrementTransferred, transferred, total));
-                }
-            }
-            catch
-            {
-            }
+            AWSSDKUtils.InvokeInBackground(PutObjectProgressEvent, new PutObjectProgressArgs(incrementTransferred, transferred, total), this);
         }
 
         #region AutoCloseStream

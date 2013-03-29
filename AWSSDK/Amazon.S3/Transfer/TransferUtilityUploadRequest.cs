@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
- *  Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  *  this file except in compliance with the License. A copy of the License is located at
  *
@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 
 using Amazon.S3.Model;
+using Amazon.Util;
 
 namespace Amazon.S3.Transfer
 {
@@ -42,7 +43,6 @@ namespace Amazon.S3.Transfer
         private string contentType;
         internal NameValueCollection metadata;
         private S3StorageClass storageClass;
-        private int timeout = 0;
         private long? partSize;
         private bool autoCloseStream = true;
         private ServerSideEncryptionMethod encryption;
@@ -436,29 +436,6 @@ namespace Amazon.S3.Transfer
         }
 
         /// <summary>
-        /// 	Gets or sets the timeout property in milliseconds.
-        /// 	The value of this property is assigned to the
-        /// 	<c>ReadWriteTimeout</c> and <c>Timeout</c> properties of the
-        /// 	<c>HTTPWebRequest</c> object used for Amazon S3 GET Object requests.
-        /// </summary>
-        /// <remarks>
-        /// 	A value less than or equal to 0 will be silently ignored.
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public int Timeout
-        {
-            get { return this.timeout; }
-            set
-            {
-                if (value > 0)
-                {
-                    this.timeout = value;
-                }
-            }
-        }
-
-        /// <summary>
         /// 	Sets the sets the timeout property in milliseconds
         /// 	and returns this object instance, 
         /// 	enabling additional method calls to be chained together.
@@ -477,7 +454,7 @@ namespace Amazon.S3.Transfer
         /// </returns>
         /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
         /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public TransferUtilityUploadRequest WithTimeout(int timeout)
+        new public TransferUtilityUploadRequest WithTimeout(int timeout)
         {
             Timeout = timeout;
             return this;
@@ -578,23 +555,7 @@ namespace Amazon.S3.Transfer
         /// <param name="total">The total number of bytes to be tranferred.</param>
         internal override void OnRaiseProgressEvent(long incrementTransferred, long transferred, long total)
         {
-            // Make a temporary copy of the event to avoid the possibility of
-            // a race condition if the last and only subscriber unsubscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<UploadProgressArgs> handler = UploadProgressEvent;
-            try
-            {
-                // Event will be null if there are no subscribers
-                if (handler != null)
-                {
-                    // This automatically calls all subscribers sequentially
-                    // http://msdn.microsoft.com/en-us/library/ms173172%28VS.80%29.aspx
-                    handler(this, new UploadProgressArgs(incrementTransferred, transferred, total));
-                }
-            }
-            catch
-            {
-            }
+            AWSSDKUtils.InvokeInBackground(UploadProgressEvent, new UploadProgressArgs(incrementTransferred, transferred, total), this);
         }
 
 

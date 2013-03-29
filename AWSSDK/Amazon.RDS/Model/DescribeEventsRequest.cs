@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -25,9 +25,10 @@ namespace Amazon.RDS.Model
 {
     /// <summary>
     /// Container for the parameters to the DescribeEvents operation.
-    /// <para> Returns events related to DB Instances, DB Security Groups, DB Snapshots and DB Parameter Groups for the past 14 days. Events
-    /// specific to a particular DB Instance, DB Security Group, database snapshot or DB Parameter Group can be obtained by providing the name as a
-    /// parameter. By default, the past hour of events are returned. </para>
+    /// <para> Returns events related to DB instances, DB security groups, DB Snapshots, and DB parameter groups for the past 14 days. Events
+    /// specific to a particular DB Iinstance, DB security group, DB Snapshot, or DB parameter group can be obtained by providing the source
+    /// identifier as a parameter. By default, the past hour of events are returned. </para> <para>You can see a list of event categories and source
+    /// types in the Events topic in the Amazon RDS User Guide.</para>
     /// </summary>
     /// <seealso cref="Amazon.RDS.AmazonRDS.DescribeEvents"/>
     public class DescribeEventsRequest : AmazonWebServiceRequest
@@ -37,6 +38,7 @@ namespace Amazon.RDS.Model
         private DateTime? startTime;
         private DateTime? endTime;
         private int? duration;
+        private List<string> eventCategories = new List<string>();
         private int? maxRecords;
         private string marker;
 
@@ -69,7 +71,7 @@ namespace Amazon.RDS.Model
         // Check to see if SourceIdentifier property is set
         internal bool IsSetSourceIdentifier()
         {
-            return this.sourceIdentifier != null;       
+            return this.sourceIdentifier != null;
         }
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace Amazon.RDS.Model
         // Check to see if SourceType property is set
         internal bool IsSetSourceType()
         {
-            return this.sourceType != null;       
+            return this.sourceType != null;
         }
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace Amazon.RDS.Model
         // Check to see if StartTime property is set
         internal bool IsSetStartTime()
         {
-            return this.startTime.HasValue;       
+            return this.startTime.HasValue;
         }
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace Amazon.RDS.Model
         // Check to see if EndTime property is set
         internal bool IsSetEndTime()
         {
-            return this.endTime.HasValue;       
+            return this.endTime.HasValue;
         }
 
         /// <summary>
@@ -192,12 +194,58 @@ namespace Amazon.RDS.Model
         // Check to see if Duration property is set
         internal bool IsSetDuration()
         {
-            return this.duration.HasValue;       
+            return this.duration.HasValue;
         }
 
         /// <summary>
-        /// The maximum number of records to include in the response. If more records exist than the specified <c>MaxRecords</c> value, a marker is
-        /// included in the response so that the remaining results may be retrieved. Default: 100 Constraints: minimum 20, maximum 100
+        /// A list of event categories that trigger notifications for a event notification subscription.
+        ///  
+        /// </summary>
+        public List<string> EventCategories
+        {
+            get { return this.eventCategories; }
+            set { this.eventCategories = value; }
+        }
+        /// <summary>
+        /// Adds elements to the EventCategories collection
+        /// </summary>
+        /// <param name="eventCategories">The values to add to the EventCategories collection </param>
+        /// <returns>this instance</returns>
+        public DescribeEventsRequest WithEventCategories(params string[] eventCategories)
+        {
+            foreach (string element in eventCategories)
+            {
+                this.eventCategories.Add(element);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds elements to the EventCategories collection
+        /// </summary>
+        /// <param name="eventCategories">The values to add to the EventCategories collection </param>
+        /// <returns>this instance</returns>
+        public DescribeEventsRequest WithEventCategories(IEnumerable<string> eventCategories)
+        {
+            foreach (string element in eventCategories)
+            {
+                this.eventCategories.Add(element);
+            }
+
+            return this;
+        }
+
+        // Check to see if EventCategories property is set
+        internal bool IsSetEventCategories()
+        {
+            return this.eventCategories.Count > 0;
+        }
+
+        /// <summary>
+        /// The maximum number of records to include in the response. If more records exist than the specified <c>MaxRecords</c> value, a pagination
+        /// token called a marker is included in the response so that the remaining results may be retrieved. Default: 100 Constraints: minimum 20,
+        /// maximum 100
         ///  
         /// </summary>
         public int MaxRecords
@@ -221,12 +269,12 @@ namespace Amazon.RDS.Model
         // Check to see if MaxRecords property is set
         internal bool IsSetMaxRecords()
         {
-            return this.maxRecords.HasValue;       
+            return this.maxRecords.HasValue;
         }
 
         /// <summary>
-        /// An optional marker provided in the previous DescribeEvents request. If this parameter is specified, the response includes only records
-        /// beyond the marker, up to the value specified by <c>MaxRecords</c>.
+        /// An optional pagination token provided by a previous DescribeEvents request. If this parameter is specified, the response includes only
+        /// records beyond the marker, up to the value specified by <c>MaxRecords</c>.
         ///  
         /// </summary>
         public string Marker
@@ -250,7 +298,7 @@ namespace Amazon.RDS.Model
         // Check to see if Marker property is set
         internal bool IsSetMarker()
         {
-            return this.marker != null;       
+            return this.marker != null;
         }
     }
 }

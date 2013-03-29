@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Amazon.Route53.Model
     /// <summary>
     /// <para>A complex type that contains name server information.</para>
     /// </summary>
-    public class DelegationSet  
+    public class DelegationSet
     {
         
         private List<string> nameServers = new List<string>();
@@ -61,7 +61,7 @@ namespace Amazon.Route53.Model
 
             return this;
         }
-        
+
         /// <summary>
         /// Adds elements to the NameServers collection
         /// </summary>
@@ -80,7 +80,7 @@ namespace Amazon.Route53.Model
         // Check to see if NameServers property is set
         internal bool IsSetNameServers()
         {
-            return this.nameServers.Count > 0;       
+            return this.nameServers.Count > 0;
         }
     }
 }

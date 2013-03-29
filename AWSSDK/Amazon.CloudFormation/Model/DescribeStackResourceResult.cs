@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ using System.IO;
 namespace Amazon.CloudFormation.Model
 {
     /// <summary>
-    /// <para> The output for a DescribeStackResource action. </para>
+    /// <para>The output for a DescribeStackResource action.</para>
     /// </summary>
-    public class DescribeStackResourceResult  
+    public class DescribeStackResourceResult
     {
         
         private StackResourceDetail stackResourceDetail;
@@ -53,7 +53,7 @@ namespace Amazon.CloudFormation.Model
         // Check to see if StackResourceDetail property is set
         internal bool IsSetStackResourceDetail()
         {
-            return this.stackResourceDetail != null;       
+            return this.stackResourceDetail != null;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
- *  Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  *  this file except in compliance with the License. A copy of the License is located at
  *
@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Amazon.Util;
 
 namespace Amazon.S3.Model
 {
@@ -47,8 +48,6 @@ namespace Amazon.S3.Model
         private long? partSize;
         private string md5Digest;
         private bool fGenerateMD5Digest;
-        private int timeout = 0;
-        private int readWriteTimeout = 0;
         private string filePath;
         private long? filePosition;
 
@@ -366,47 +365,10 @@ namespace Amazon.S3.Model
         /// </remarks>
         /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
         /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public int Timeout
-        {
-            get { return this.timeout; }
-            set
-            {
-                if (value > 0 || value == System.Threading.Timeout.Infinite)
-                {
-                    this.timeout = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Custom Timeout property (in milliseconds).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The value of this property is assigned to the
-        /// Timeout property of the HTTPWebRequest object used
-        /// for S3 PUT Object requests.
-        /// </para>
-        /// <para>
-        /// Please set the timeout only if you are certain that
-        /// the file will not be transferred within the default intervals
-        /// for an HttpWebRequest.
-        /// </para>
-        /// <para>
-        /// A value less than or equal to 0 will be silently ignored
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        /// <seealso cref="P:System.Net.HttpWebRequest.Timeout"/>
-        public UploadPartRequest WithTimeout(int timeout)
+        new public UploadPartRequest WithTimeout(int timeout)
         {
             Timeout = timeout;
             return this;
-        }
-
-        internal override bool SupportTimeout
-        {
-            get { return true; }
         }
 
         #endregion
@@ -427,41 +389,10 @@ namespace Amazon.S3.Model
         /// </para>
         /// </remarks>
         /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        public int ReadWriteTimeout
-        {
-            get { return this.readWriteTimeout; }
-            set
-            {
-                if (value > 0 || value == System.Threading.Timeout.Infinite)
-                {
-                    this.readWriteTimeout = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Custom ReadWriteTimeout property (in milliseconds).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The value of this property is assigned to the
-        /// ReadWriteTimeout property of the HTTPWebRequest object
-        /// used for S3 PUT Object requests.
-        /// </para>
-        /// <para>
-        /// A value less than or equal to 0 will be silently ignored
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        public UploadPartRequest WithReadWriteTimeout(int readWriteTimeout)
+        new public UploadPartRequest WithReadWriteTimeout(int readWriteTimeout)
         {
             ReadWriteTimeout = readWriteTimeout;
             return this;
-        }
-
-        internal override bool SupportReadWriteTimeout
-        {
-            get { return true; }
         }
 
         #endregion
@@ -511,23 +442,7 @@ namespace Amazon.S3.Model
         /// <param name="total">The total number of bytes to be transferred</param>
         internal override void OnRaiseProgressEvent(long incrementTransferred, long transferred, long total)
         {
-            // Make a temporary copy of the event to avoid the possibility of
-            // a race condition if the last and only subscriber unsubscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<UploadPartProgressArgs> handler = UploadPartProgressEvent;
-            try
-            {
-                // Event will be null if there are no subscribers
-                if (handler != null)
-                {
-                    // This automatically calls all subscribers sequentially
-                    // http://msdn.microsoft.com/en-us/library/ms173172%28VS.80%29.aspx
-                    handler(this, new UploadPartProgressArgs(incrementTransferred, transferred, total));
-                }
-            }
-            catch
-            {
-            }
+            AWSSDKUtils.InvokeInBackground(UploadPartProgressEvent, new UploadPartProgressArgs(incrementTransferred, transferred, total), this);
         }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ using System.Security;
 using System.Text;
 using System.Threading;
 
-using Amazon.SecurityToken;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime.Internal.Util;
+using Amazon.SecurityToken;
 using Amazon.Util;
 
 
@@ -41,7 +41,6 @@ namespace Amazon.Runtime
 
         static IDictionary<string, RefreshingSessionAWSCredentials> cachedRefreshingCredentials = new Dictionary<string, RefreshingSessionAWSCredentials>();
         static object cachedRefreshingCredentialsLock = new object();
-
 
         [Flags]
         internal enum AuthenticationTypes
@@ -107,6 +106,11 @@ namespace Amazon.Runtime
                     }
                     credentials = null;
                 }
+                if (disposing && logger != null)
+                {
+                    logger.Flush();
+                    logger = null;
+                }
                 this.disposed = true;
             }
         }
@@ -135,7 +139,11 @@ namespace Amazon.Runtime
 
         internal AmazonWebServiceClient(AWSCredentials credentials, ClientConfig config, bool ownCredentials, AuthenticationTypes authenticationType)
         {
-            this.logger = new Logger(this.GetType());
+            if (config.DisableLogging)
+                this.logger = Logger.EmptyLogger;
+            else
+                this.logger = Logger.GetLogger(this.GetType());
+
             this.config = config;
             this.ownCredentials = ownCredentials;
             this.authenticationType = authenticationType;
@@ -219,15 +227,59 @@ namespace Amazon.Runtime
 
         protected void Invoke(AsyncResult asyncResult)
         {
-            ConfigureRequest(asyncResult);
+            asyncResult.Metrics.StartEvent(RequestMetrics.Metric.ClientExecuteTime);
+            asyncResult.Request.Endpoint = new Uri(this.config.DetermineServiceURL());
+            if (config.LogMetrics)
+            {
+                asyncResult.Metrics.IsEnabled = true;
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.ServiceName, asyncResult.Request.ServiceName);
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.ServiceEndpoint, asyncResult.Request.Endpoint);
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.MethodName, asyncResult.RequestName);
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.AsyncCall, !asyncResult.CompletedSynchronously);
+            }
+            InvokeHelper(asyncResult);
+        }
 
+        private void InvokeHelper(AsyncResult asyncResult)
+        {
+            if (asyncResult.RetriesAttempt == 0 || config.ResignRetries)
+            {
+                ConfigureRequest(asyncResult);
+            }
+            if (asyncResult.RetriesAttempt > 0)
+                asyncResult.Metrics.SetCounter(RequestMetrics.Metric.AttemptCount, asyncResult.RetriesAttempt);
             InvokeConfiguredRequest(asyncResult);
+        }
+
+        private void ConfigureRequest(AsyncResult asyncResult)
+        {
+            IRequest request = asyncResult.Request;
+
+            request.Headers["User-Agent"] = this.config.UserAgent + " " + (asyncResult.CompletedSynchronously ? "ClientSync" : "ClientAsync");
+            if (!request.Headers.ContainsKey(AWSSDKUtils.ContentTypeHeader))
+            {
+                if (request.UseQueryString)
+                    request.Headers[AWSSDKUtils.ContentTypeHeader] = "application/x-amz-json-1.0";
+                else
+                    request.Headers[AWSSDKUtils.ContentTypeHeader] = AWSSDKUtils.UrlEncodedContent;
+            }
+
+            ProcessRequestHandlers(request);
+
+            using (asyncResult.Metrics.StartEvent(RequestMetrics.Metric.RequestSigningTime))
+            {
+                SignRequest(request, asyncResult.Signer, asyncResult.Metrics);
+            }
+
+            if (request.ContentStream == null)
+                asyncResult.RequestData = GetRequestData(request);
+            else
+                asyncResult.RequestStream = request.ContentStream;
         }
 
         private void InvokeConfiguredRequest(AsyncResult asyncResult)
         {
-            if(logger.IsDebugEnabled)
-                logger.DebugFormat("Starting request {0} at {1}", asyncResult.RequestName, this.config.ServiceURL);
+            logger.DebugFormat("Starting request {0} at {1}", asyncResult.RequestName, this.config.ServiceURL);
 
             if (asyncResult.RetriesAttempt > 0 && asyncResult.RequestStream != null)
             {
@@ -236,7 +288,7 @@ namespace Amazon.Runtime
 
             HttpWebRequest webRequest = ConfigureWebRequest(asyncResult);
             asyncResult.RequestState = new AsyncResult.AsyncRequestState(webRequest, asyncResult.RequestData, asyncResult.RequestStream);
-            asyncResult.RequestStartTicks = asyncResult.ElapsedTicks;
+            asyncResult.Metrics.StartEvent(RequestMetrics.Metric.HttpRequestTime);
 
             if (asyncResult.CompletedSynchronously)
             {
@@ -267,29 +319,6 @@ namespace Amazon.Runtime
             }
         }
 
-        private void ConfigureRequest(AsyncResult asyncResult)
-        {
-            IRequest request = asyncResult.Request;
-
-            request.Endpoint = new Uri(this.config.DetermineServiceURL());
-            request.Headers["User-Agent"] = this.config.UserAgent + " " + (asyncResult.CompletedSynchronously ? "ClientSync" : "ClientAsync");
-            if (!request.Headers.ContainsKey(AWSSDKUtils.ContentTypeHeader))
-            {
-                if (request.UseQueryString)
-                    request.Headers[AWSSDKUtils.ContentTypeHeader] = "application/x-amz-json-1.0";
-                else
-                    request.Headers[AWSSDKUtils.ContentTypeHeader] = AWSSDKUtils.UrlEncodedContent;
-            }
-
-            ProcessRequestHandlers(request);
-
-            SignRequest(request, asyncResult.Signer);
-
-            if (request.ContentStream == null)
-                asyncResult.RequestData = GetRequestData(request);
-            else
-                asyncResult.RequestStream = request.ContentStream;
-        }
 
         private byte[] GetRequestData(IRequest request)
         {
@@ -304,8 +333,7 @@ namespace Amazon.Runtime
                 requestData = request.Content;
             }
 
-            if (logger.IsDebugEnabled)
-                this.logger.DebugFormat("Request body's content size {0}", requestData.Length);
+            this.logger.DebugFormat("Request body's content size {0}", requestData.Length);
             return requestData;
         }
 
@@ -375,7 +403,10 @@ namespace Amazon.Runtime
 
                                 if (callback != null)
                                 {
-                                    callback(this, new StreamTransferProgressArgs(bytesRead, totalBytesWritten, inputStream.Length));
+                                    AWSSDKUtils.InvokeInBackground(
+                                        callback,
+                                        new StreamTransferProgressArgs(bytesRead, totalBytesWritten, inputStream.Length),
+                                        this);
                                 }
                             }
 
@@ -406,7 +437,7 @@ namespace Amazon.Runtime
                 if (handleHttpWebErrorResponse(asyncResult, e))
                 {
                     asyncResult.RetriesAttempt++;
-                    InvokeConfiguredRequest(asyncResult);                    
+                    InvokeHelper(asyncResult);
                 }
                 else
                 {
@@ -421,6 +452,7 @@ namespace Amazon.Runtime
             {
                 asyncResult.RequestState.WebRequest.Abort();
                 asyncResult.Exception = e;
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.Exception, e);
 
                 asyncResult.SignalWaitHandle();
                 if (asyncResult.Callback != null)
@@ -436,6 +468,7 @@ namespace Amazon.Runtime
             else
                 asyncResult = result.AsyncState as AsyncResult;
 
+            UnmarshallerContext context = null;
             asyncResult.RequestState.GetResponseCallbackCalled = true;
             bool shouldRetry = false;
             try
@@ -449,25 +482,34 @@ namespace Amazon.Runtime
                     else
                         httpResponse = state.WebRequest.EndGetResponse(result) as HttpWebResponse;
 
-                    var unmarshaller = asyncResult.Unmarshaller;
-                    LogResponse(asyncResult, httpResponse.StatusCode);
-                    try
-                    {                        
-                        var context = unmarshaller.CreateContext(httpResponse, config.LogResponse || config.ReadEntireResponse, asyncResult);
-
-                        AmazonWebServiceResponse response = unmarshaller.Unmarshall(context);
-                        context.ValidateCRC32IfAvailable();
-
-                        response.ContentLength = httpResponse.ContentLength;
-                        asyncResult.FinalResponse = response;
-
-                        LogFinishedResponse(asyncResult, context, httpResponse.ContentLength);
-                        ProcessResponseHandlers(response, asyncResult.Request);
-                    }
-                    finally
+                    using (asyncResult.Metrics.StartEvent(RequestMetrics.Metric.ResponseProcessingTime))
                     {
-                        if (!unmarshaller.HasStreamingProperty)
-                            httpResponse.Close();
+                        var unmarshaller = asyncResult.Unmarshaller;
+                        asyncResult.Metrics.AddProperty(RequestMetrics.Metric.StatusCode, httpResponse.StatusCode);
+                        LogResponse(asyncResult, httpResponse.StatusCode);
+                        try
+                        {
+                            context = unmarshaller.CreateContext(httpResponse, config.LogResponse || config.ReadEntireResponse || AWSConfigs.ResponseLogging != ResponseLoggingOption.Never, asyncResult);
+
+                            AmazonWebServiceResponse response;
+                            using (asyncResult.Metrics.StartEvent(RequestMetrics.Metric.ResponseUnmarshallTime))
+                            {
+                                response = unmarshaller.Unmarshall(context);
+                            }
+                            context.ValidateCRC32IfAvailable();
+
+                            response.ContentLength = httpResponse.ContentLength;
+                            asyncResult.FinalResponse = response;
+                            asyncResult.Metrics.AddProperty(RequestMetrics.Metric.AWSRequestID, response.ResponseMetadata.RequestId);
+
+                            LogFinishedResponse(asyncResult, context, httpResponse.ContentLength);
+                            ProcessResponseHandlers(response, asyncResult.Request);
+                        }
+                        finally
+                        {
+                            if (!unmarshaller.HasStreamingProperty)
+                                httpResponse.Close();
+                        }
                     }
                 }
                 catch (WebException we)
@@ -476,6 +518,10 @@ namespace Amazon.Runtime
                     if (exceptionHttpResponse != null)
                     {
                         LogResponse(asyncResult, exceptionHttpResponse.StatusCode);
+                    }
+                    else
+                    {
+                        asyncResult.Metrics.StopEvent(RequestMetrics.Metric.HttpRequestTime);
                     }
                     shouldRetry = handleHttpWebErrorResponse(asyncResult, we);
                 }
@@ -489,17 +535,28 @@ namespace Amazon.Runtime
                 {
                     asyncResult.RequestState.WebRequest.Abort();
                     asyncResult.RetriesAttempt++;
-                    InvokeConfiguredRequest(asyncResult);
+                    InvokeHelper(asyncResult);
+                }
+                else
+                {
+                    LogFinalMetrics(asyncResult);
                 }
             }
             catch (Exception e)
             {
+                if (context != null && AWSConfigs.ResponseLogging == ResponseLoggingOption.OnError)
+                    this.logger.Error(e, "Received response: [{0}]", context.ResponseBody);
+
                 asyncResult.RequestState.WebRequest.Abort();
                 asyncResult.Exception = e;
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.Exception, e);
+                asyncResult.Metrics.StopEvent(RequestMetrics.Metric.ClientExecuteTime);
                 shouldRetry = false;
+                if (config.LogMetrics)
+                    logger.InfoFormat("Request metrics: {0}", asyncResult.Metrics);
+
                 ProcessExceptionHandlers(e, asyncResult.Request);
-                if (logger.IsErrorEnabled)
-                    logger.Error(string.Format("Error configuring web request {0} to {1}.", asyncResult.RequestName, asyncResult.Request.Endpoint.ToString()), e);
+                logger.Error(e, "Error configuring web request {0} to {1}.", asyncResult.RequestName, asyncResult.Request.Endpoint.ToString());
             }
             finally
             {
@@ -510,42 +567,44 @@ namespace Amazon.Runtime
                         asyncResult.Callback(asyncResult);
                 }
             }
+
+        }
+
+        private void LogFinalMetrics(AsyncResult asyncResult)
+        {
+            asyncResult.Metrics.StopEvent(RequestMetrics.Metric.ClientExecuteTime);
+            if (config.LogMetrics)
+            {
+                string errors = asyncResult.Metrics.GetErrors();
+                if (!string.IsNullOrEmpty(errors))
+                    logger.InfoFormat("Request metrics errors: {0}", errors);
+                logger.InfoFormat("Request metrics: {0}", asyncResult.Metrics);
+            }
         }
 
         private void LogResponse(AsyncResult asyncResult, HttpStatusCode statusCode)
         {
-            asyncResult.ResponseReceivedTicks = asyncResult.ElapsedTicks;
-            asyncResult.ResponseTime += asyncResult.ResponseReceivedTicks - asyncResult.RequestStartTicks;
-            if (logger.IsInfoEnabled)
-                this.logger.InfoFormat("Received response for {0} with status code {1} in {2} ticks.",
-                    asyncResult.RequestName,
-                    statusCode,
-                    asyncResult.ResponseTime);
+            RequestMetrics.Timing timing = asyncResult.Metrics.StopEvent(RequestMetrics.Metric.HttpRequestTime);
+            this.logger.InfoFormat("Received response for {0} with status code {1} in {2} ticks.", asyncResult.RequestName, statusCode, timing.ElapsedTicks);
         }
 
         private void LogFinishedResponse(AsyncResult asyncResult, UnmarshallerContext context, long contentLength)
         {
-            long currentTime = asyncResult.ElapsedTicks;
-
-            asyncResult.TotalRequestTime = currentTime;
-            asyncResult.ResponseProcessingTime += currentTime - asyncResult.StreamReadStartTime;
-            asyncResult.BytesProcessed = contentLength;
-            if (config.LogResponse)
+            asyncResult.Metrics.AddProperty(RequestMetrics.Metric.BytesProcessed, contentLength);
+            if (config.LogResponse || AWSConfigs.ResponseLogging == ResponseLoggingOption.Always)
             {
-                if (logger.IsInfoEnabled)
-                    this.logger.InfoFormat("Received response: [{0}]", context.ResponseBody);
+                this.logger.DebugFormat("Received response: [{0}]", context.ResponseBody);
             }
-            if (logger.IsInfoEnabled)
-                logger.InfoFormat("Request completed: {0}", asyncResult);
         }
 
         bool handleIOException(AsyncResult asyncResult, HttpWebResponse httpResponse, IOException e)
         {
+            asyncResult.Metrics.AddProperty(RequestMetrics.Metric.Exception, e);
+
             if (isInnerExceptionThreadAbort(e))
                 throw e;
 
-            if (logger.IsErrorEnabled)
-                this.logger.Error(string.Format("IOException making request {0} to {1}.", asyncResult.RequestName, asyncResult.Request.Endpoint.ToString()), e);
+            this.logger.Error(e, "IOException making request {0} to {1}.", asyncResult.RequestName, asyncResult.Request.Endpoint.ToString());
             if (httpResponse != null)
             {
                 httpResponse.Close();
@@ -556,13 +615,10 @@ namespace Amazon.Runtime
 
             if (asyncResult.RetriesAttempt < config.MaxErrorRetry)
             {
-                if (logger.IsErrorEnabled)
-                    this.logger.Error(
-                        string.Format("IOException making request {0} to {1}. Attempting retry {2}.",
-                            asyncResult.RequestName,
-                            asyncResult.Request.Endpoint.ToString(),
-                            asyncResult.RetriesAttempt),
-                        e);
+                this.logger.Error(e, "IOException making request {0} to {1}. Attempting retry {2}.",
+                        asyncResult.RequestName,
+                        asyncResult.Request.Endpoint.ToString(),
+                        asyncResult.RetriesAttempt);
                 return true;
             }
             else
@@ -573,6 +629,8 @@ namespace Amazon.Runtime
 
         bool handleHttpWebErrorResponse(AsyncResult asyncResult, WebException we)
         {
+            asyncResult.Metrics.AddProperty(RequestMetrics.Metric.Exception, we);
+
             HttpStatusCode statusCode;
             AmazonServiceException errorResponseException = null;
             using (HttpWebResponse httpErrorResponse = we.Response as HttpWebResponse)
@@ -591,32 +649,33 @@ namespace Amazon.Runtime
                     throw new AmazonServiceException(we);
                 }
                 statusCode = httpErrorResponse.StatusCode;
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.StatusCode, statusCode);
                 string redirectedLocation = httpErrorResponse.Headers["location"];
+                asyncResult.Metrics.AddProperty(RequestMetrics.Metric.RedirectLocation, redirectedLocation);
 
                 using (httpErrorResponse)
                 {
                     var unmarshaller = asyncResult.Unmarshaller;
-                    UnmarshallerContext errorContext = unmarshaller.CreateContext(httpErrorResponse, config.LogResponse || config.ReadEntireResponse, asyncResult);
-                    if (config.LogResponse)
-                    {
-                        if (logger.IsInfoEnabled)
-                            this.logger.InfoFormat("Received error response: [{0}]", errorContext.ResponseBody);
-                    }
+                    UnmarshallerContext errorContext = unmarshaller.CreateContext(httpErrorResponse, config.LogResponse || config.ReadEntireResponse || AWSConfigs.ResponseLogging != ResponseLoggingOption.Never, asyncResult);
                     errorResponseException = unmarshaller.UnmarshallException(errorContext, we, statusCode);
+                    if (config.LogResponse || AWSConfigs.ResponseLogging != ResponseLoggingOption.Never)
+                    {
+                        this.logger.Error(errorResponseException, "Received error response: [{0}]", errorContext.ResponseBody);
+                    }
+                    asyncResult.Metrics.AddProperty(RequestMetrics.Metric.AWSRequestID, errorResponseException.RequestId);
+                    asyncResult.Metrics.AddProperty(RequestMetrics.Metric.AWSErrorCode, errorResponseException.ErrorCode);
                 }
                 asyncResult.RequestState.WebRequest.Abort();
 
                 if (isTemporaryRedirect(statusCode, redirectedLocation))
                 {
-                    if (logger.IsInfoEnabled)
-                        this.logger.InfoFormat("Request {0} is being redirected to {1}.", asyncResult.RequestName, redirectedLocation);
+                    this.logger.DebugFormat("Request {0} is being redirected to {1}.", asyncResult.RequestName, redirectedLocation);
                     asyncResult.Request.Endpoint = new Uri(redirectedLocation);
                     return true;
                 }
                 else if (ShouldRetry(statusCode, this.config, errorResponseException, asyncResult.RetriesAttempt))
                 {
-                    if (logger.IsInfoEnabled)
-                        this.logger.InfoFormat("Retry number {0} for request {1}.", asyncResult.RetriesAttempt, asyncResult.RequestName);
+                    this.logger.DebugFormat("Retry number {0} for request {1}.", asyncResult.RetriesAttempt, asyncResult.RequestName);
                     pauseExponentially(asyncResult);
                     return true;
                 }
@@ -624,22 +683,22 @@ namespace Amazon.Runtime
 
             if (errorResponseException != null)
             {
-                if (logger.IsErrorEnabled)
-                    this.logger.Error(string.Format("Error making request {0}.", asyncResult.RequestName), errorResponseException);
+                this.logger.Error(errorResponseException, "Error making request {0}.", asyncResult.RequestName);
                 throw errorResponseException;
             }
 
             AmazonServiceException excep = new AmazonServiceException("Unable to make request", we, statusCode);
-            if (logger.IsErrorEnabled)
-                this.logger.Error(string.Format("Error making request {0}.", asyncResult.RequestName), excep);
+            this.logger.Error(excep, "Error making request {0}.", asyncResult.RequestName);
+            asyncResult.Metrics.AddProperty(RequestMetrics.Metric.Exception, excep);
             throw excep;
         }
 
         private void pauseExponentially(AsyncResult asyncResult)
         {
-            long pauseStart = asyncResult.ElapsedTicks;
-            pauseExponentially(asyncResult.RetriesAttempt);
-            asyncResult.PauseTime += (asyncResult.ElapsedTicks - pauseStart);
+            using (asyncResult.Metrics.StartEvent(RequestMetrics.Metric.RetryPauseTime))
+            {
+                pauseExponentially(asyncResult.RetriesAttempt);
+            }
         }
 
         #endregion
@@ -706,21 +765,12 @@ namespace Amazon.Runtime
                 if (this.config.ProxyHost != null && this.config.ProxyPort != 0)
                 {
                     WebProxy proxy = new WebProxy(this.config.ProxyHost, this.config.ProxyPort);
-                    if (config.ProxyUsername != null)
-                    {
-                        proxy.Credentials = new NetworkCredential(
-                            config.ProxyUsername,
-                            config.ProxyPassword ?? String.Empty
-                            );
-                        if (logger.IsDebugEnabled)
-                            this.logger.DebugFormat("Configured request to use proxy with host {0} and port {1} for user {2}.", config.ProxyHost, config.ProxyPort, config.ProxyUsername);
-                    }
-                    else
-                    {
-                        if (logger.IsDebugEnabled)
-                            this.logger.DebugFormat("Configured request to use proxy with host {0} and port {1}.", config.ProxyHost, config.ProxyPort);
-                    }
+                    this.logger.DebugFormat("Configured request to use proxy with host {0} and port {1}.", config.ProxyHost, config.ProxyPort);
                     request.Proxy = proxy;
+                }
+                if (request.Proxy != null && config.ProxyCredentials != null)
+                {
+                    request.Proxy.Credentials = config.ProxyCredentials;
                 }
 
                 // Setting of these properties is moved to before signing
@@ -825,17 +875,19 @@ namespace Amazon.Runtime
         private enum ClientProtocol { QueryStringProtocol, RestProtocol, Unknown }
         private static ClientProtocol DetermineProtocol(AbstractAWSSigner signer)
         {
-            if (signer is AWS3Signer || signer is AWS4Signer)
+            if (signer is AWS3Signer || signer is AWS4Signer || signer is CloudFrontSigner)
                 return ClientProtocol.RestProtocol;
             if (signer is QueryStringSigner)
                 return ClientProtocol.QueryStringProtocol;
             return ClientProtocol.Unknown;
         }
 
-        private void SignRequest(IRequest request, AbstractAWSSigner signer)
+        private void SignRequest(IRequest request, AbstractAWSSigner signer, RequestMetrics metrics)
         {
+            metrics.StartEvent(RequestMetrics.Metric.CredentialsRequestTime);
             using (ImmutableCredentials immutableCredentials = credentials.GetCredentials())
             {
+                metrics.StopEvent(RequestMetrics.Metric.CredentialsRequestTime);
                 if (immutableCredentials.UseToken)
                 {
                     ClientProtocol protocol = DetermineProtocol(signer);

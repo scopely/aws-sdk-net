@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  * this file except in compliance with the License. A copy of the License is located at
  *
@@ -18,6 +18,8 @@
  *  AWS SDK for .NET
  */
 
+using System;
+using System.Net;
 using Amazon.Util;
 
 namespace Amazon.EC2
@@ -27,7 +29,7 @@ namespace Amazon.EC2
     /// </summary>
     public class AmazonEC2Config
     {
-        private string serviceVersion = "2012-12-01";
+        private string serviceVersion = "2013-02-01";
         private RegionEndpoint regionEndpoint;
         private string serviceURL = "https://ec2.amazonaws.com";
         private string userAgent = Amazon.Util.AWSSDKUtils.SDKUserAgent;
@@ -40,6 +42,7 @@ namespace Amazon.EC2
         private string proxyUsername;
         private string proxyPassword;
         private int? connectionLimit;
+        private ICredentials proxyCredentials;
 
         /// <summary>
         /// Gets Service Version
@@ -249,6 +252,44 @@ namespace Amazon.EC2
             return this.proxyPort >= 0;
         }
 
+
+        /// <summary>
+        /// Credentials to use with a proxy.
+        /// </summary>
+        public ICredentials ProxyCredentials
+        {
+            get
+            {
+                ICredentials credentials = this.proxyCredentials;
+                if (credentials == null && this.IsSetProxyUsername())
+                {
+                    credentials = new NetworkCredential(this.proxyUsername, this.proxyPassword ?? String.Empty);
+                }
+                return credentials;
+            }
+            set { this.proxyCredentials = value; }
+        }
+
+        /// <summary>
+        /// Sets the ProxyCredentials property.
+        /// </summary>
+        /// <param name="proxyCredentials">ProxyCredentials property</param>
+        /// <returns>this instance</returns>
+        public AmazonEC2Config WithProxyCredentials(ICredentials proxyCredentials)
+        {
+            this.proxyCredentials = proxyCredentials;
+            return this;
+        }
+
+        /// <summary>
+        /// Checks if ProxyCredentials property is set
+        /// </summary>
+        /// <returns>true if ProxyCredentials property is set</returns>
+        internal bool IsSetProxyCredentials()
+        {
+            return (this.ProxyCredentials != null);
+        }
+
         /// <summary>
         /// Gets and sets of the MaxErrorRetry property.
         /// </summary>
@@ -334,6 +375,7 @@ namespace Amazon.EC2
         /// property to authenticate requests with the
         /// specified Proxy server.
         /// </summary>
+        [Obsolete("Use ProxyCredentials instead")]
         public string ProxyUsername
         {
             get { return this.proxyUsername; }
@@ -345,6 +387,7 @@ namespace Amazon.EC2
         /// </summary>
         /// <param name="userName">Value for the ProxyUsername property</param>
         /// <returns>this instance</returns>
+        [Obsolete("Use WithProxyCredentials instead")]
         public AmazonEC2Config WithProxyUsername(string userName)
         {
             this.proxyUsername = userName;
@@ -371,6 +414,7 @@ namespace Amazon.EC2
         /// the proxy password. This property isn't
         /// used if ProxyUsername is null or empty.
         /// </remarks>
+        [Obsolete("Use ProxyCredentials instead")]
         public string ProxyPassword
         {
             get { return this.proxyPassword; }
@@ -390,6 +434,7 @@ namespace Amazon.EC2
         /// </remarks>
         /// <param name="password">ProxyPassword property</param>
         /// <returns>this instance</returns>
+        [Obsolete("Use WithProxyCredentials instead")]
         public AmazonEC2Config WithProxyPassword(string password)
         {
             this.proxyPassword = password;

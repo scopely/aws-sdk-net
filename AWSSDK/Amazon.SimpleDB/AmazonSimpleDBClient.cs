@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  * this file except in compliance with the License. A copy of the License is located at
  *
@@ -45,7 +45,7 @@ namespace Amazon.SimpleDB
 {
     public class AmazonSimpleDBClient : AmazonSimpleDB
     {
-        static Logger LOGGER = new Logger(typeof(AmazonSimpleDBClient));
+        static Logger LOGGER = Logger.GetLogger(typeof(AmazonSimpleDBClient));
 
         private bool ownCredentials;
         private AWSCredentials credentials;
@@ -70,6 +70,10 @@ namespace Amazon.SimpleDB
                         credentials.Dispose();
                     }
                     credentials = null;
+                }
+                if (fDisposing && LOGGER != null)
+                {
+                    LOGGER.Flush();
                 }
                 this.disposed = true;
             }
@@ -1261,7 +1265,7 @@ namespace Amazon.SimpleDB
             catch (Exception e)
             {
                 sdbAsyncResult.RequestState.WebRequest.Abort();
-                LOGGER.Error("Error for GetRequestStream", e);
+                LOGGER.Error(e, "Error for GetRequestStream");
                 sdbAsyncResult.Exception = e;
 
                 sdbAsyncResult.SignalWaitHandle();
@@ -1310,7 +1314,7 @@ namespace Amazon.SimpleDB
             catch (Exception e)
             {
                 sdbAsyncResult.RequestState.WebRequest.Abort();
-                LOGGER.Error("Error for GetResponse", e);
+                LOGGER.Error(e, "Error for GetResponse");
                 sdbAsyncResult.Exception = e;
                 shouldRetry = false;
             }
@@ -1434,14 +1438,11 @@ namespace Amazon.SimpleDB
                 if (config.IsSetProxyHost() && config.IsSetProxyPort())
                 {
                     WebProxy proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
-                    if (config.IsSetProxyUsername())
-                    {
-                        proxy.Credentials = new NetworkCredential(
-                            config.ProxyUsername,
-                            config.ProxyPassword ?? String.Empty
-                            );
-                    }
                     request.Proxy = proxy;
+                }
+                if (request.Proxy != null && config.IsSetProxyCredentials())
+                {
+                    request.Proxy.Credentials = config.ProxyCredentials;
                 }
                 request.UserAgent = headers[AWSSDKUtils.UserAgentHeader] + " " + (completedSynchronously ? "SDBSync" : "SDBAsync");
                 request.Method = "POST";

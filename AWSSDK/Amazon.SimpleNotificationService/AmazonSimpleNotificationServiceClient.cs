@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2008-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2008-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use
  * this file except in compliance with the License. A copy of the License is located at
  *
@@ -470,14 +470,11 @@ namespace Amazon.SimpleNotificationService
                 if (config.IsSetProxyHost() && config.IsSetProxyPort())
                 {
                     WebProxy proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
-                    if (config.IsSetProxyUsername())
-                    {
-                        proxy.Credentials = new NetworkCredential(
-                            config.ProxyUsername,
-                            config.ProxyPassword ?? String.Empty
-                            );
-                    }
                     request.Proxy = proxy;
+                }
+                if (request.Proxy != null && config.IsSetProxyCredentials())
+                {
+                    request.Proxy.Credentials = config.ProxyCredentials;
                 }
                 request.UserAgent = headers[AWSSDKUtils.UserAgentHeader];
                 request.Method = "POST";

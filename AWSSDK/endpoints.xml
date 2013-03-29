@@ -23,7 +23,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.us-east-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -158,6 +158,24 @@
         <Https>true</Https>
         <Hostname>datapipeline.us-east-1.amazonaws.com</Hostname>
       </Endpoint>
+      <Endpoint>
+        <ServiceName>redshift</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>redshift.us-east-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>opsworks</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>opsworks.us-east-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.us-east-1.amazonaws.com</Hostname>
+      </Endpoint>
     </Region>
     <Region>
       <Name>us-west-1</Name>
@@ -176,7 +194,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.us-west-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -282,6 +300,12 @@
         <Hostname>elasticloadbalancing.us-west-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.us-west-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>glacier</ServiceName>
         <Http>true</Http>
         <Https>true</Https>
@@ -292,6 +316,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.us-west-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.us-west-1.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -311,7 +341,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.us-west-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -417,6 +447,12 @@
         <Hostname>elasticloadbalancing.us-west-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.us-west-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>glacier</ServiceName>
         <Http>true</Http>
         <Https>true</Https>
@@ -427,6 +463,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.us-west-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.us-west-2.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -446,7 +488,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.eu-west-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -552,6 +594,12 @@
         <Hostname>elasticloadbalancing.eu-west-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.eu-west-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>glacier</ServiceName>
         <Http>true</Http>
         <Https>true</Https>
@@ -562,6 +610,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.eu-west-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.eu-west-1.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -581,7 +635,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.ap-northeast-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -687,6 +741,12 @@
         <Hostname>elasticloadbalancing.ap-northeast-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.ap-northeast-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>glacier</ServiceName>
         <Http>true</Http>
         <Https>true</Https>
@@ -697,6 +757,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.ap-northeast-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.ap-northeast-1.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -716,7 +782,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.ap-southeast-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -822,10 +888,22 @@
         <Hostname>elasticloadbalancing.ap-southeast-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.ap-southeast-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>directconnect</ServiceName>
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.ap-southeast-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.ap-southeast-1.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -845,7 +923,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -939,10 +1017,22 @@
         <Hostname>elasticloadbalancing.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.ap-southeast-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>directconnect</ServiceName>
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.ap-southeast-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -962,7 +1052,7 @@
       <Endpoint>
         <ServiceName>monitoring</ServiceName>
         <Http>true</Http>
-        <Https>false</Https>
+        <Https>true</Https>
         <Hostname>monitoring.sa-east-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
@@ -1068,10 +1158,22 @@
         <Hostname>elasticloadbalancing.sa-east-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>swf</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>swf.sa-east-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>directconnect</ServiceName>
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.sa-east-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>elastictranscoder</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>elastictranscoder.sa-east-1.amazonaws.com</Hostname>
       </Endpoint>
     </Region>
     <Region>
@@ -1093,6 +1195,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>ec2.us-gov-west-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>rds</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>rds.us-gov-west-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
         <ServiceName>sns</ServiceName>
@@ -1235,6 +1343,7 @@
       <RegionName>ap-southeast-1</RegionName>
       <RegionName>ap-southeast-2</RegionName>
       <RegionName>sa-east-1</RegionName>
+      <RegionName>us-gov-west-1</RegionName>
     </Service>
     <Service>
       <Name>route53</Name>
@@ -1394,6 +1503,13 @@
       <Name>swf</Name>
       <FullName>Amazon Simple Workflow Service</FullName>
       <RegionName>us-east-1</RegionName>
+      <RegionName>us-west-1</RegionName>
+      <RegionName>us-west-2</RegionName>
+      <RegionName>eu-west-1</RegionName>
+      <RegionName>ap-northeast-1</RegionName>
+      <RegionName>ap-southeast-1</RegionName>
+      <RegionName>ap-southeast-2</RegionName>
+      <RegionName>sa-east-1</RegionName>
     </Service>
     <Service>
       <Name>glacier</Name>
@@ -1409,6 +1525,7 @@
       <FullName>AWS Direct Connect</FullName>
       <RegionName>us-east-1</RegionName>
       <RegionName>us-west-1</RegionName>
+      <RegionName>us-west-2</RegionName>
       <RegionName>eu-west-1</RegionName>
       <RegionName>ap-northeast-1</RegionName>
       <RegionName>ap-southeast-1</RegionName>
@@ -1419,6 +1536,28 @@
       <Name>datapipeline</Name>
       <FullName>AWS Data Pipeline</FullName>
       <RegionName>us-east-1</RegionName>
+    </Service>
+    <Service>
+      <Name>redshift</Name>
+      <FullName>Amazon Redshift</FullName>
+      <RegionName>us-east-1</RegionName>
+    </Service>
+    <Service>
+      <Name>opsworks</Name>
+      <FullName>AWS OpsWorks</FullName>
+      <RegionName>us-east-1</RegionName>
+    </Service>
+    <Service>
+      <Name>elastictranscoder</Name>
+      <FullName>Amazon Elastic Transcoder</FullName>
+      <RegionName>us-east-1</RegionName>
+      <RegionName>us-west-1</RegionName>
+      <RegionName>us-west-2</RegionName>
+      <RegionName>eu-west-1</RegionName>
+      <RegionName>ap-northeast-1</RegionName>
+      <RegionName>ap-southeast-1</RegionName>
+      <RegionName>ap-southeast-2</RegionName>
+      <RegionName>sa-east-1</RegionName>
     </Service>
   </Services>
 </XML>

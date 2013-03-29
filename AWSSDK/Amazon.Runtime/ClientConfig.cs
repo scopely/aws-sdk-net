@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ using System.Text;
 
 using Amazon.Runtime.Internal.Auth;
 using Amazon.Util;
+using System.Configuration;
+using System.Collections.Specialized;
+using System.Net;
 
 namespace Amazon.Runtime
 {
@@ -27,7 +30,6 @@ namespace Amazon.Runtime
     /// </summary>
     public abstract class ClientConfig
     {
-
         private RegionEndpoint regionEndpoint;
 
         private string serviceURL = "https://elasticloadbalancing.amazonaws.com/";
@@ -47,6 +49,10 @@ namespace Amazon.Runtime
         private int? connectionLimit;
         private bool useNagleAlgorithm = false;
         private int bufferSize = Amazon.S3.Util.S3Constants.DefaultBufferSize;
+        private bool resignRetries = false;
+        private ICredentials proxyCredentials;
+        private bool logMetrics = AWSConfigs.LogMetrics;
+        private bool disableLogging = false;
 
         /// <summary>
         /// Gets Service Version
@@ -216,6 +222,7 @@ namespace Amazon.Runtime
         /// property to authenticate requests with the
         /// specified Proxy server.
         /// </summary>
+        [Obsolete("Use ProxyCredentials instead")]
         public string ProxyUsername
         {
             get { return this.proxyUsername; }
@@ -233,12 +240,29 @@ namespace Amazon.Runtime
         /// the proxy password. This property isn't
         /// used if ProxyUsername is null or empty.
         /// </remarks>
+        [Obsolete("Use ProxyCredentials instead")]
         public string ProxyPassword
         {
             get { return this.proxyPassword; }
             set { this.proxyPassword = value; }
         }
 
+        /// <summary>
+        /// Credentials to use with a proxy.
+        /// </summary>
+        public ICredentials ProxyCredentials
+        {
+            get
+            {
+                ICredentials credentials = this.proxyCredentials;
+                if (credentials == null && !string.IsNullOrEmpty(this.proxyUsername))
+                {
+                    credentials = new NetworkCredential(this.proxyUsername, this.proxyPassword ?? String.Empty);
+                }
+                return credentials;
+            }
+            set { this.proxyCredentials = value; }
+        }
 
         /// <summary>
         /// Gets and sets the LogResponse.
@@ -293,6 +317,43 @@ namespace Amazon.Runtime
         {
             get { return this.bufferSize; }
             set { this.bufferSize = value; }
+        }
+
+        /// <summary>
+        /// Flag on whether to resign requests on retry or not.
+        /// </summary>
+        internal bool ResignRetries
+        {
+            get { return this.resignRetries; }
+            set { this.resignRetries = value; }
+        }
+
+        /// <summary>
+        /// Flag on whether to log metrics for service calls.
+        /// 
+        /// This can be set in the application's configs, as below:
+        /// <code>
+        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
+        /// &lt;configuration&gt;
+        ///     &lt;appSettings&gt;
+        ///         &lt;add key="AWSLogMetrics" value"true"/&gt;
+        ///     &lt;/appSettings&gt;
+        /// &lt;/configuration&gt;
+        /// </code>
+        /// </summary>
+        public bool LogMetrics
+        {
+            get { return this.logMetrics; }
+            set { this.logMetrics = value; }
+        }
+
+        /// <summary>
+        /// Flag on whether to completely disable logging for this client or not.
+        /// </summary>
+        internal bool DisableLogging
+        {
+            get { return this.disableLogging; }
+            set { this.disableLogging = value; }
         }
     }
 }

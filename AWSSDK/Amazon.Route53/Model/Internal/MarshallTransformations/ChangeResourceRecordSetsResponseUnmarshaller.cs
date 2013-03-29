@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
         public override AmazonWebServiceResponse Unmarshall(XmlUnmarshallerContext context) 
         {
             ChangeResourceRecordSetsResponse response = new ChangeResourceRecordSetsResponse();
-            
             while (context.Read())
             {
                 if (context.IsStartElement)
@@ -39,8 +38,7 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
                     response.ChangeResourceRecordSetsResult = ChangeResourceRecordSetsResultUnmarshaller.GetInstance().Unmarshall(context);
                     break;
                 }
-            }
-                 
+            } 
                         
             return response;
         }
@@ -50,9 +48,9 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
         {
             ErrorResponse errorResponse = ErrorResponseUnmarshaller.GetInstance().Unmarshall(context);
             
-            if (errorResponse.Code != null && errorResponse.Code.Equals("InvalidChangeBatch"))
+            if (errorResponse.Code != null && errorResponse.Code.Equals("InvalidInput"))
             {
-                return new InvalidChangeBatchException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
+                return new InvalidInputException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
             }
     
             if (errorResponse.Code != null && errorResponse.Code.Equals("NoSuchHostedZone"))
@@ -60,9 +58,19 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
                 return new NoSuchHostedZoneException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
             }
     
-            if (errorResponse.Code != null && errorResponse.Code.Equals("InvalidInput"))
+            if (errorResponse.Code != null && errorResponse.Code.Equals("InvalidChangeBatch"))
             {
-                return new InvalidInputException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
+                return new InvalidChangeBatchException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
+            }
+    
+            if (errorResponse.Code != null && errorResponse.Code.Equals("NoSuchHealthCheck"))
+            {
+                return new NoSuchHealthCheckException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
+            }
+    
+            if (errorResponse.Code != null && errorResponse.Code.Equals("PriorRequestNotComplete"))
+            {
+                return new PriorRequestNotCompleteException(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
             }
     
             return new AmazonRoute53Exception(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);

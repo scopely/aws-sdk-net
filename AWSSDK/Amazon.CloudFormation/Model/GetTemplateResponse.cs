@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ namespace Amazon.CloudFormation.Model
         /// </summary>
         public GetTemplateResult GetTemplateResult
         {
-            get 
+            get
             {
                 if(this.getTemplateResult == null)
                 {
                     this.getTemplateResult = new GetTemplateResult();
                 }
 
-                return this.getTemplateResult; 
+                return this.getTemplateResult;
             }
             set { this.getTemplateResult = value; }
         }

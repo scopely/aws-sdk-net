@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ namespace Amazon.Route53.Model
         /// </summary>
         public CreateHostedZoneResult CreateHostedZoneResult
         {
-            get 
+            get
             {
                 if(this.createHostedZoneResult == null)
                 {
                     this.createHostedZoneResult = new CreateHostedZoneResult();
                 }
 
-                return this.createHostedZoneResult; 
+                return this.createHostedZoneResult;
             }
             set { this.createHostedZoneResult = value; }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
      /// <summary>
      ///   DelegationSet Unmarshaller
      /// </summary>
-    internal class DelegationSetUnmarshaller : IUnmarshaller<DelegationSet, XmlUnmarshallerContext> 
+    internal class DelegationSetUnmarshaller : IUnmarshaller<DelegationSet, XmlUnmarshallerContext>, IUnmarshaller<DelegationSet, JsonUnmarshallerContext> 
     {
         public DelegationSet Unmarshall(XmlUnmarshallerContext context) 
         {
             DelegationSet delegationSet = new DelegationSet();
             int originalDepth = context.CurrentDepth;
             int targetDepth = originalDepth + 1;
+            
             if (context.IsStartOfDocument) 
                targetDepth += 2;
             
@@ -52,6 +53,11 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
 
 
             return delegationSet;
+        }
+
+        public DelegationSet Unmarshall(JsonUnmarshallerContext context) 
+        {
+            return null;
         }
 
         private static DelegationSetUnmarshaller instance;

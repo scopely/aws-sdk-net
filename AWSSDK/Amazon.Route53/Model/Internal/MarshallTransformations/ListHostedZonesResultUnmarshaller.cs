@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
      /// <summary>
      ///   ListHostedZonesResult Unmarshaller
      /// </summary>
-    internal class ListHostedZonesResultUnmarshaller : IUnmarshaller<ListHostedZonesResult, XmlUnmarshallerContext> 
+    internal class ListHostedZonesResultUnmarshaller : IUnmarshaller<ListHostedZonesResult, XmlUnmarshallerContext>, IUnmarshaller<ListHostedZonesResult, JsonUnmarshallerContext> 
     {
         public ListHostedZonesResult Unmarshall(XmlUnmarshallerContext context) 
         {
             ListHostedZonesResult listHostedZonesResult = new ListHostedZonesResult();
             int originalDepth = context.CurrentDepth;
             int targetDepth = originalDepth + 1;
+            
             if (context.IsStartOfDocument) 
                targetDepth += 2;
             
@@ -76,6 +77,11 @@ namespace Amazon.Route53.Model.Internal.MarshallTransformations
 
 
             return listHostedZonesResult;
+        }
+
+        public ListHostedZonesResult Unmarshall(JsonUnmarshallerContext context) 
+        {
+            return null;
         }
 
         private static ListHostedZonesResultUnmarshaller instance;

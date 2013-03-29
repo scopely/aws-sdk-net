@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ using System.IO;
 namespace Amazon.CloudFormation.Model
 {
     /// <summary>
-    /// <para> The output for a CreateStack action. </para>
+    /// <para>The output for a CreateStack action.</para>
     /// </summary>
-    public class CreateStackResult  
+    public class CreateStackResult
     {
         
         private string stackId;
@@ -53,7 +53,7 @@ namespace Amazon.CloudFormation.Model
         // Check to see if StackId property is set
         internal bool IsSetStackId()
         {
-            return this.stackId != null;       
+            return this.stackId != null;
         }
     }
 }
