@@ -490,30 +490,37 @@ namespace Amazon.DynamoDB.DataModel
         }
         private static bool TryToPrimitive(Type type, object value, out Primitive output)
         {
-            if (type.IsAssignableFrom(typeof(Boolean))) output = (Boolean)value;
-            else if (type.IsAssignableFrom(typeof(Byte))) output = (Byte)value;
-            else if (type.IsAssignableFrom(typeof(Char))) output = (Char)value;
-            else if (type.IsAssignableFrom(typeof(DateTime))) output = (DateTime)value;
-            else if (type.IsAssignableFrom(typeof(Decimal))) output = (Decimal)value;
-            else if (type.IsAssignableFrom(typeof(Double))) output = (Double)value;
-            else if (type.IsAssignableFrom(typeof(int))) output = (int)value;
-            else if (type.IsAssignableFrom(typeof(long))) output = (long)value;
-            else if (type.IsAssignableFrom(typeof(SByte))) output = (SByte)value;
-            else if (type.IsAssignableFrom(typeof(short))) output = (short)value;
-            else if (type.IsAssignableFrom(typeof(Single))) output = (Single)value;
-            else if (type.IsAssignableFrom(typeof(String))) output = (String)value;
-            else if (type.IsAssignableFrom(typeof(uint))) output = (uint)value;
-            else if (type.IsAssignableFrom(typeof(ulong))) output = (ulong)value;
-            else if (type.IsAssignableFrom(typeof(ushort))) output = (ushort)value;
-            else if (type.IsAssignableFrom(typeof(Guid))) output = (Guid)value;
-            else if (type.IsAssignableFrom(typeof(byte[]))) output = (byte[])value;
-            else if (type.IsAssignableFrom(typeof(MemoryStream))) output = (MemoryStream)value;
-            else
+            try
             {
-                output = null;
-                return false;
+                if (type.IsAssignableFrom(typeof (Boolean))) output = (Boolean) value;
+                else if (type.IsAssignableFrom(typeof (Byte))) output = (Byte) value;
+                else if (type.IsAssignableFrom(typeof (Char))) output = (Char) value;
+                else if (type.IsAssignableFrom(typeof (DateTime))) output = (DateTime) value;
+                else if (type.IsAssignableFrom(typeof (Decimal))) output = (Decimal) value;
+                else if (type.IsAssignableFrom(typeof (Double))) output = (Double) value;
+                else if (type.IsAssignableFrom(typeof (int))) output = (int) value;
+                else if (type.IsAssignableFrom(typeof (long))) output = (long) value;
+                else if (type.IsAssignableFrom(typeof (SByte))) output = (SByte) value;
+                else if (type.IsAssignableFrom(typeof (short))) output = (short) value;
+                else if (type.IsAssignableFrom(typeof (Single))) output = (Single) value;
+                else if (type.IsAssignableFrom(typeof (String))) output = (String) value;
+                else if (type.IsAssignableFrom(typeof (uint))) output = (uint) value;
+                else if (type.IsAssignableFrom(typeof (ulong))) output = (ulong) value;
+                else if (type.IsAssignableFrom(typeof (ushort))) output = (ushort) value;
+                else if (type.IsAssignableFrom(typeof (Guid))) output = (Guid) value;
+                else if (type.IsAssignableFrom(typeof (byte[]))) output = (byte[]) value;
+                else if (type.IsAssignableFrom(typeof (MemoryStream))) output = (MemoryStream) value;
+                else
+                {
+                    output = null;
+                    return false;
+                }
+                return true;
             }
-            return true;
+            catch(InvalidCastException ex)
+            {
+                throw new InvalidCastException(String.Format("{0}: Type={1}, value={2}", ex.Message, type, value), ex);
+            }
         }
 
         // Get/Set object properties

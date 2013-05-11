@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AWSSDK</RootNamespace>
-    <AssemblyName>AWSSDK</AssemblyName>
+    <AssemblyName>AWSSDKScopely</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>
@@ -54,7 +54,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\AWSSDK.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\AWSSDKScopely.xml</DocumentationFile>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <NoWarn>419,1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -67,7 +67,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\AWSSDK.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\AWSSDKScopely.xml</DocumentationFile>
     <RegisterForComInterop>false</RegisterForComInterop>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DebugSymbols>false</DebugSymbols>
