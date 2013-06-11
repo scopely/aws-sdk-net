@@ -34,6 +34,9 @@ namespace Amazon.RDS.Model
         private bool? portRequired;
         private int? defaultPort;
         private List<string> optionsDependedOn = new List<string>();
+        private bool? persistent;
+        private bool? permanent;
+        private List<OptionGroupOptionSetting> optionGroupOptionSettings = new List<OptionGroupOptionSetting>();
 
         /// <summary>
         /// The name of the option.
@@ -274,6 +277,109 @@ namespace Amazon.RDS.Model
         internal bool IsSetOptionsDependedOn()
         {
             return this.optionsDependedOn.Count > 0;
+        }
+
+        /// <summary>
+        /// A persistent option cannot be removed from the option group once the option group is used, but this option can be removed from the db
+        /// instance while modifying the related data and assigning another option group without this option.
+        ///  
+        /// </summary>
+        public bool Persistent
+        {
+            get { return this.persistent ?? default(bool); }
+            set { this.persistent = value; }
+        }
+
+        /// <summary>
+        /// Sets the Persistent property
+        /// </summary>
+        /// <param name="persistent">The value to set for the Persistent property </param>
+        /// <returns>this instance</returns>
+        public OptionGroupOption WithPersistent(bool persistent)
+        {
+            this.persistent = persistent;
+            return this;
+        }
+            
+
+        // Check to see if Persistent property is set
+        internal bool IsSetPersistent()
+        {
+            return this.persistent.HasValue;
+        }
+
+        /// <summary>
+        /// A permanent option cannot be removed from the option group once the option group is used, and it cannot be removed from the db instance
+        /// after assigning an option group with this permanent option.
+        ///  
+        /// </summary>
+        public bool Permanent
+        {
+            get { return this.permanent ?? default(bool); }
+            set { this.permanent = value; }
+        }
+
+        /// <summary>
+        /// Sets the Permanent property
+        /// </summary>
+        /// <param name="permanent">The value to set for the Permanent property </param>
+        /// <returns>this instance</returns>
+        public OptionGroupOption WithPermanent(bool permanent)
+        {
+            this.permanent = permanent;
+            return this;
+        }
+            
+
+        // Check to see if Permanent property is set
+        internal bool IsSetPermanent()
+        {
+            return this.permanent.HasValue;
+        }
+
+        /// <summary>
+        /// Specifies the option settings that are available (and the default value) for each option in an option group.
+        ///  
+        /// </summary>
+        public List<OptionGroupOptionSetting> OptionGroupOptionSettings
+        {
+            get { return this.optionGroupOptionSettings; }
+            set { this.optionGroupOptionSettings = value; }
+        }
+        /// <summary>
+        /// Adds elements to the OptionGroupOptionSettings collection
+        /// </summary>
+        /// <param name="optionGroupOptionSettings">The values to add to the OptionGroupOptionSettings collection </param>
+        /// <returns>this instance</returns>
+        public OptionGroupOption WithOptionGroupOptionSettings(params OptionGroupOptionSetting[] optionGroupOptionSettings)
+        {
+            foreach (OptionGroupOptionSetting element in optionGroupOptionSettings)
+            {
+                this.optionGroupOptionSettings.Add(element);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds elements to the OptionGroupOptionSettings collection
+        /// </summary>
+        /// <param name="optionGroupOptionSettings">The values to add to the OptionGroupOptionSettings collection </param>
+        /// <returns>this instance</returns>
+        public OptionGroupOption WithOptionGroupOptionSettings(IEnumerable<OptionGroupOptionSetting> optionGroupOptionSettings)
+        {
+            foreach (OptionGroupOptionSetting element in optionGroupOptionSettings)
+            {
+                this.optionGroupOptionSettings.Add(element);
+            }
+
+            return this;
+        }
+
+        // Check to see if OptionGroupOptionSettings property is set
+        internal bool IsSetOptionGroupOptionSettings()
+        {
+            return this.optionGroupOptionSettings.Count > 0;
         }
     }
 }

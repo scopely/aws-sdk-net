@@ -418,11 +418,9 @@ namespace Amazon.RDS.Model
 
         /// <summary>
         /// The weekly time range (in UTC) during which system maintenance can occur. Format: <c>ddd:hh24:mi-ddd:hh24:mi</c> Default: A 30-minute window
-        /// selected at random from an 8-hour block of time per region, occurring on a random day of the week. The following list shows the time blocks
-        /// for each region from which the default maintenance windows are assigned. <ul> <li><b>US-East (Northern Virginia) Region:</b> 03:00-11:00
-        /// UTC</li> <li><b>US-West (Northern California) Region:</b> 06:00-14:00 UTC</li> <li><b>EU (Ireland) Region:</b> 22:00-06:00 UTC</li>
-        /// <li><b>Asia Pacific (Singapore) Region:</b> 14:00-22:00 UTC</li> <li><b>Asia Pacific (Tokyo) Region: </b> 17:00-03:00 UTC</li> </ul> Valid
-        /// Days: Mon, Tue, Wed, Thu, Fri, Sat, Sun Constraints: Minimum 30-minute window.
+        /// selected at random from an 8-hour block of time per region, occurring on a random day of the week. To see the time blocks available, see <a
+        /// href="http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AdjustingTheMaintenanceWindow.html"> Adjusting the Preferred Maintenance
+        /// Window</a> in the Amazon RDS User Guide. Valid Days: Mon, Tue, Wed, Thu, Fri, Sat, Sun Constraints: Minimum 30-minute window.
         ///  
         /// </summary>
         public string PreferredMaintenanceWindow
@@ -718,7 +716,10 @@ namespace Amazon.RDS.Model
         }
 
         /// <summary>
-        /// Indicates that the DB Instance should be associated with the specified option group.
+        /// Indicates that the DB Instance should be associated with the specified option group. <!-- Note that persistent options, such as the
+        /// TDE_SQLServer option for Microsoft SQL Server, cannot be removed from an option group while DB instances are associated with the option
+        /// group. --> Permanent options, such as the TDE option for Oracle Advanced Security TDE, cannot be removed from an option group, and that
+        /// option group cannot be removed from a DB instance once it is associated with a DB instance
         ///  
         /// </summary>
         public string OptionGroupName
@@ -772,6 +773,16 @@ namespace Amazon.RDS.Model
         {
             return this.characterSetName != null;
         }
+
+        /// <summary>
+        /// Specifies the accessibility options for the DB Instance. A value of true specifies an Internet-facing instance with a publicly resolvable
+        /// DNS name, which resolves to a public IP address. A value of false specifies an internal instance with a DNS name that resolves to a private
+        /// IP address. Default: The default behavior varies depending on whether a VPC has been requested or not. The following list shows the default
+        /// behavior in each case. <ul> <li><b>Default VPC:</b>true</li> <li><b>VPC:</b>false</li> </ul> If no DB subnet group has been specified as
+        /// part of the request and the PubliclyAccessible value has not been set, the DB instance will be publicly accessible. If a specific DB subnet
+        /// group has been specified as part of the request and the PubliclyAccessible value has not been set, the DB instance will be private.
+        ///  
+        /// </summary>
         public bool PubliclyAccessible
         {
             get { return this.publiclyAccessible ?? default(bool); }

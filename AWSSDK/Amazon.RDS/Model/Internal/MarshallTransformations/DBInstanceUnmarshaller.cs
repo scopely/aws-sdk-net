@@ -196,9 +196,9 @@ namespace Amazon.RDS.Model.Internal.MarshallTransformations
                             
                         continue;
                     } 
-                    if (context.TestExpression("OptionGroupMembership", targetDepth))
+                    if (context.TestExpression("OptionGroupMemberships/OptionGroupMembership", targetDepth))
                     {
-                        dBInstance.OptionGroupMembership = OptionGroupMembershipUnmarshaller.GetInstance().Unmarshall(context);
+                        dBInstance.OptionGroupMemberships.Add(OptionGroupMembershipUnmarshaller.GetInstance().Unmarshall(context));
                             
                         continue;
                     } 
@@ -217,6 +217,12 @@ namespace Amazon.RDS.Model.Internal.MarshallTransformations
                     if (context.TestExpression("PubliclyAccessible", targetDepth))
                     {
                         dBInstance.PubliclyAccessible = BoolUnmarshaller.GetInstance().Unmarshall(context);
+                            
+                        continue;
+                    } 
+                    if (context.TestExpression("StatusInfos/DBInstanceStatusInfo", targetDepth))
+                    {
+                        dBInstance.StatusInfos.Add(DBInstanceStatusInfoUnmarshaller.GetInstance().Unmarshall(context));
                             
                         continue;
                     }

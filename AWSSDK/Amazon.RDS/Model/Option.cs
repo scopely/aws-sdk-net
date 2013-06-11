@@ -28,7 +28,10 @@ namespace Amazon.RDS.Model
         
         private string optionName;
         private string optionDescription;
+        private bool? persistent;
+        private bool? permanent;
         private int? port;
+        private List<OptionSetting> optionSettings = new List<OptionSetting>();
         private List<DBSecurityGroupMembership> dBSecurityGroupMemberships = new List<DBSecurityGroupMembership>();
         private List<VpcSecurityGroupMembership> vpcSecurityGroupMemberships = new List<VpcSecurityGroupMembership>();
 
@@ -89,6 +92,62 @@ namespace Amazon.RDS.Model
         }
 
         /// <summary>
+        /// Indicate if this option is persistent.
+        ///  
+        /// </summary>
+        public bool Persistent
+        {
+            get { return this.persistent ?? default(bool); }
+            set { this.persistent = value; }
+        }
+
+        /// <summary>
+        /// Sets the Persistent property
+        /// </summary>
+        /// <param name="persistent">The value to set for the Persistent property </param>
+        /// <returns>this instance</returns>
+        public Option WithPersistent(bool persistent)
+        {
+            this.persistent = persistent;
+            return this;
+        }
+            
+
+        // Check to see if Persistent property is set
+        internal bool IsSetPersistent()
+        {
+            return this.persistent.HasValue;
+        }
+
+        /// <summary>
+        /// Indicate if this option is permanent.
+        ///  
+        /// </summary>
+        public bool Permanent
+        {
+            get { return this.permanent ?? default(bool); }
+            set { this.permanent = value; }
+        }
+
+        /// <summary>
+        /// Sets the Permanent property
+        /// </summary>
+        /// <param name="permanent">The value to set for the Permanent property </param>
+        /// <returns>this instance</returns>
+        public Option WithPermanent(bool permanent)
+        {
+            this.permanent = permanent;
+            return this;
+        }
+            
+
+        // Check to see if Permanent property is set
+        internal bool IsSetPermanent()
+        {
+            return this.permanent.HasValue;
+        }
+
+        /// <summary>
         /// If required, the port configured for this option to use.
         ///  
         /// </summary>
@@ -117,7 +176,52 @@ namespace Amazon.RDS.Model
         }
 
         /// <summary>
-        /// If the Option requires access to a port, then this DB Security Group allows access to the port.
+        /// The option settings for this option.
+        ///  
+        /// </summary>
+        public List<OptionSetting> OptionSettings
+        {
+            get { return this.optionSettings; }
+            set { this.optionSettings = value; }
+        }
+        /// <summary>
+        /// Adds elements to the OptionSettings collection
+        /// </summary>
+        /// <param name="optionSettings">The values to add to the OptionSettings collection </param>
+        /// <returns>this instance</returns>
+        public Option WithOptionSettings(params OptionSetting[] optionSettings)
+        {
+            foreach (OptionSetting element in optionSettings)
+            {
+                this.optionSettings.Add(element);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds elements to the OptionSettings collection
+        /// </summary>
+        /// <param name="optionSettings">The values to add to the OptionSettings collection </param>
+        /// <returns>this instance</returns>
+        public Option WithOptionSettings(IEnumerable<OptionSetting> optionSettings)
+        {
+            foreach (OptionSetting element in optionSettings)
+            {
+                this.optionSettings.Add(element);
+            }
+
+            return this;
+        }
+
+        // Check to see if OptionSettings property is set
+        internal bool IsSetOptionSettings()
+        {
+            return this.optionSettings.Count > 0;
+        }
+
+        /// <summary>
+        /// If the option requires access to a port, then this DB Security Group allows access to the port.
         ///  
         /// </summary>
         public List<DBSecurityGroupMembership> DBSecurityGroupMemberships
@@ -162,7 +266,7 @@ namespace Amazon.RDS.Model
         }
 
         /// <summary>
-        /// If the Option requires access to a port, then this VPC Security Group allows access to the port.
+        /// If the option requires access to a port, then this VPC Security Group allows access to the port.
         ///  
         /// </summary>
         public List<VpcSecurityGroupMembership> VpcSecurityGroupMemberships

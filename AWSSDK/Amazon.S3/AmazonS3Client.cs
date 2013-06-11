@@ -45,6 +45,7 @@ using Amazon.Runtime;
 using Amazon.Runtime.Internal.Util;
 
 using Map = System.Collections.Generic.IDictionary<Amazon.S3.Model.S3QueryParameter, string>;
+using System.Globalization;
 
 namespace Amazon.S3
 {
@@ -5800,8 +5801,8 @@ namespace Amazon.S3
             s3AsyncResult.S3Request.Headers[AWSSDKUtils.UserAgentHeader] = userAgent;
 
             ProcessRequestHandlers(s3AsyncResult.S3Request);
-
-            ImmutableCredentials immutableCredentials = credentials == null ? null : credentials.GetCredentials();
+                        
+            ImmutableCredentials immutableCredentials = credentials == null || credentials is AnonymousAWSCredentials ? null : credentials.GetCredentials();
             try
             {
                 if (!isRedirect)
@@ -6163,7 +6164,7 @@ namespace Amazon.S3
             }
 
             // Add token if available
-            if (credentials != null && immutableCredentials.UseToken)
+            if (immutableCredentials != null && immutableCredentials.UseToken ) 
             {
                 webHeaders[S3Constants.AmzSecurityTokenHeader] = immutableCredentials.Token;
             }
@@ -6298,6 +6299,7 @@ namespace Amazon.S3
             LOGGER.InfoFormat("Received response for {0} (id {1}) with status code {2} in {3}.", actionName, userRequest.Id, httpResponse.StatusCode, lengthOfRequest);
 
             statusCode = httpResponse.StatusCode;
+
             if (!isRedirect(httpResponse))
             {
                 // The request submission has completed. Retrieve the response.
@@ -6363,6 +6365,9 @@ namespace Amazon.S3
             }
 
             HttpStatusCode statusCode = httpResponse.StatusCode;
+
+            if (statusCode == HttpStatusCode.NotModified)
+                return false;
 
             return (statusCode >= HttpStatusCode.MovedPermanently &&
                 statusCode < HttpStatusCode.BadRequest);
@@ -6765,7 +6770,7 @@ namespace Amazon.S3
                 string value = headers[AWSSDKUtils.IfModifiedSinceHeader];
                 if (!String.IsNullOrEmpty(value))
                 {
-                    DateTime date = DateTime.ParseExact(value, AWSSDKUtils.GMTDateFormat, null);
+                    DateTime date = DateTime.ParseExact(value, AWSSDKUtils.GMTDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                     httpRequest.IfModifiedSince = date;
                     headers.Remove(AWSSDKUtils.IfModifiedSinceHeader);
                     request.removedHeaders[AWSSDKUtils.IfModifiedSinceHeader] = value;

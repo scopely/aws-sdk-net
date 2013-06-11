@@ -5770,10 +5770,6 @@ namespace Amazon.EC2
             {
                 parameters["SubnetId"] = request.SubnetId;
             }
-            if (request.IsSetAdditionalInfo())
-            {
-                parameters["AdditionalInfo"] = request.AdditionalInfo;
-            }
             if (request.IsSetDisableApiTermination())
             {
                 parameters["DisableApiTermination"] = request.DisableApiTermination.ToString().ToLower();
@@ -5849,6 +5845,11 @@ namespace Amazon.EC2
                             parameters[String.Concat("NetworkInterface", ".", instanceNetworkInterfaceListIndex, ".", "PrivateIpAddresses", ".", privateIpAddressesListIndex, ".", "PrivateIpAddress")] = privateIpAddress.IpAddress;
                             privateIpAddressesListIndex++;
                         }
+                    }
+
+                    if (instanceNetworkInterface.IsSetSecondaryPrivateIpAddressCount())
+                    {
+                        parameters[String.Concat("NetworkInterface", ".", instanceNetworkInterfaceListIndex, ".", "SecondaryPrivateIpAddressCount")] = instanceNetworkInterface.SecondaryPrivateIpAddressCount.ToString();
                     }
 
                     instanceNetworkInterfaceListIndex++;

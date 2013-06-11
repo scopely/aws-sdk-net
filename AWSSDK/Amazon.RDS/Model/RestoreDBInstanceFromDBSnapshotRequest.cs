@@ -248,6 +248,16 @@ namespace Amazon.RDS.Model
         {
             return this.multiAZ.HasValue;
         }
+
+        /// <summary>
+        /// Specifies the accessibility options for the DB Instance. A value of true specifies an Internet-facing instance with a publicly resolvable
+        /// DNS name, which resolves to a public IP address. A value of false specifies an internal instance with a DNS name that resolves to a private
+        /// IP address. Default: The default behavior varies depending on whether a VPC has been requested or not. The following list shows the default
+        /// behavior in each case. <ul> <li><b>Default VPC:</b>true</li> <li><b>VPC:</b>false</li> </ul> If no DB subnet group has been specified as
+        /// part of the request and the PubliclyAccessible value has not been set, the DB instance will be publicly accessible. If a specific DB subnet
+        /// group has been specified as part of the request and the PubliclyAccessible value has not been set, the DB instance will be private.
+        ///  
+        /// </summary>
         public bool PubliclyAccessible
         {
             get { return this.publiclyAccessible ?? default(bool); }
@@ -387,8 +397,10 @@ namespace Amazon.RDS.Model
         }
 
         /// <summary>
-        /// The amount of Provisioned IOPS (input/output operations per second) to be initially allocated for the DB Instance. Constraints: Must be an
-        /// integer greater than 1000.
+        /// Specifies the amount of provisioned IOPS for the DB Instance, expressed in I/O operations per second. If this parameter is not specified,
+        /// the IOPS value will be taken from the backup. If this parameter is set to 0, the new instance will be converted to a non-PIOPS instance,
+        /// which will take additional time, though your DB instance will be available for connections before the conversion starts. Constraints: Must
+        /// be an integer greater than 1000.
         ///  
         /// </summary>
         public int Iops
@@ -414,6 +426,14 @@ namespace Amazon.RDS.Model
         {
             return this.iops.HasValue;
         }
+
+        /// <summary>
+        /// The name of the option group to be used for the restored DB instance. <!-- Note that persistent options, such as the TDE_SQLServer option
+        /// for Microsoft SQL Server, cannot be removed from an option group while DB instances are associated with the option group. --> Permanent
+        /// options, such as the TDE option for Oracle Advanced Security TDE, cannot be removed from an option group, and that option group cannot be
+        /// removed from a DB instance once it is associated with a DB instance
+        ///  
+        /// </summary>
         public string OptionGroupName
         {
             get { return this.optionGroupName; }
