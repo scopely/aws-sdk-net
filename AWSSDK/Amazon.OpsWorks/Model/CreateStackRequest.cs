@@ -39,6 +39,7 @@ namespace Amazon.OpsWorks.Model
         private string hostnameTheme;
         private string defaultAvailabilityZone;
         private string customJson;
+        private StackConfigurationManager configurationManager;
         private bool? useCustomCookbooks;
         private Source customCookbooksSource;
         private string defaultSshKeyName;
@@ -59,6 +60,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="name">The value to set for the Name property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithName(string name)
         {
             this.name = name;
@@ -88,6 +90,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="region">The value to set for the Region property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithRegion(string region)
         {
             this.region = region;
@@ -116,6 +119,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="pairs">The pairs to be added to the Attributes dictionary.</param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithAttributes(params KeyValuePair<string, string>[] pairs)
         {
             foreach (KeyValuePair<string, string> pair in pairs)
@@ -133,8 +137,8 @@ namespace Amazon.OpsWorks.Model
         }
 
         /// <summary>
-        /// The stack AWS Identity and Access Management (IAM) role, which allows OpsWorks to work with AWS resources on your behalf. You must set this
-        /// parameter to the Amazon Resource Name (ARN) for an existing IAM role. For more information about IAM ARNs, see <a
+        /// The stack AWS Identity and Access Management (IAM) role, which allows AWS OpsWorks to work with AWS resources on your behalf. You must set
+        /// this parameter to the Amazon Resource Name (ARN) for an existing IAM role. For more information about IAM ARNs, see <a
         /// href="http://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html">Using Identifiers</a>.
         ///  
         /// </summary>
@@ -149,6 +153,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="serviceRoleArn">The value to set for the ServiceRoleArn property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithServiceRoleArn(string serviceRoleArn)
         {
             this.serviceRoleArn = serviceRoleArn;
@@ -178,6 +183,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="defaultInstanceProfileArn">The value to set for the DefaultInstanceProfileArn property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithDefaultInstanceProfileArn(string defaultInstanceProfileArn)
         {
             this.defaultInstanceProfileArn = defaultInstanceProfileArn;
@@ -206,6 +212,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="defaultOs">The value to set for the DefaultOs property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithDefaultOs(string defaultOs)
         {
             this.defaultOs = defaultOs;
@@ -220,11 +227,11 @@ namespace Amazon.OpsWorks.Model
         }
 
         /// <summary>
-        /// The stack's host name theme, with spaces are replaced by underscores. The theme is used to generate hostnames for the stack's instances. By
-        /// default, <c>HostnameTheme</c> is set to Layer_Dependent, which creates hostnames by appending integers to the layer's shortname. The other
+        /// The stack's host name theme, with spaces are replaced by underscores. The theme is used to generate host names for the stack's instances. By
+        /// default, <c>HostnameTheme</c> is set to Layer_Dependent, which creates host names by appending integers to the layer's short name. The other
         /// themes are: <ul> <li>Baked_Goods</li> <li>Clouds</li> <li>European_Cities</li> <li>Fruits</li> <li>Greek_Deities</li>
         /// <li>Legendary_Creatures_from_Japan</li> <li>Planets_and_Moons</li> <li>Roman_Deities</li> <li>Scottish_Islands</li> <li>US_Cities</li>
-        /// <li>Wild_Cats</li> </ul> To obtain a generated hostname, call <c>GetHostNameSuggestion</c>, which returns a hostname based on the current
+        /// <li>Wild_Cats</li> </ul> To obtain a generated host name, call <c>GetHostNameSuggestion</c>, which returns a host name based on the current
         /// theme.
         ///  
         /// </summary>
@@ -239,6 +246,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="hostnameTheme">The value to set for the HostnameTheme property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithHostnameTheme(string hostnameTheme)
         {
             this.hostnameTheme = hostnameTheme;
@@ -268,6 +276,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="defaultAvailabilityZone">The value to set for the DefaultAvailabilityZone property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithDefaultAvailabilityZone(string defaultAvailabilityZone)
         {
             this.defaultAvailabilityZone = defaultAvailabilityZone;
@@ -299,6 +308,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="customJson">The value to set for the CustomJson property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithCustomJson(string customJson)
         {
             this.customJson = customJson;
@@ -310,6 +320,36 @@ namespace Amazon.OpsWorks.Model
         internal bool IsSetCustomJson()
         {
             return this.customJson != null;
+        }
+
+        /// <summary>
+        /// The configuration manager. When you create a stack you can optionally use the configuration manager to specify the Chef version, 0.9 or
+        /// 11.4. The default value is currently 0.9. However, we expect to change the default value to 11.4 in late August.
+        ///  
+        /// </summary>
+        public StackConfigurationManager ConfigurationManager
+        {
+            get { return this.configurationManager; }
+            set { this.configurationManager = value; }
+        }
+
+        /// <summary>
+        /// Sets the ConfigurationManager property
+        /// </summary>
+        /// <param name="configurationManager">The value to set for the ConfigurationManager property </param>
+        /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
+        public CreateStackRequest WithConfigurationManager(StackConfigurationManager configurationManager)
+        {
+            this.configurationManager = configurationManager;
+            return this;
+        }
+            
+
+        // Check to see if ConfigurationManager property is set
+        internal bool IsSetConfigurationManager()
+        {
+            return this.configurationManager != null;
         }
 
         /// <summary>
@@ -327,6 +367,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="useCustomCookbooks">The value to set for the UseCustomCookbooks property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithUseCustomCookbooks(bool useCustomCookbooks)
         {
             this.useCustomCookbooks = useCustomCookbooks;
@@ -343,7 +384,7 @@ namespace Amazon.OpsWorks.Model
         /// <summary>
         /// Contains the information required to retrieve an app or cookbook from a repository. For more information, see <a
         /// href="http://docs.aws.amazon.com/opsworks/latest/userguide/workingapps-creating.html">Creating Apps</a> or <a
-        /// href="http://docs.aws.amazon.com/opsworks/latest/userguide/workingcookbook-installingcustom.html">Custom Recipes and Cookbooks</a>.
+        /// href="http://docs.aws.amazon.com/opsworks/latest/userguide/workingcookbook.html">Custom Recipes and Cookbooks</a>.
         ///  
         /// </summary>
         public Source CustomCookbooksSource
@@ -357,6 +398,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="customCookbooksSource">The value to set for the CustomCookbooksSource property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithCustomCookbooksSource(Source customCookbooksSource)
         {
             this.customCookbooksSource = customCookbooksSource;
@@ -385,6 +427,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="defaultSshKeyName">The value to set for the DefaultSshKeyName property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithDefaultSshKeyName(string defaultSshKeyName)
         {
             this.defaultSshKeyName = defaultSshKeyName;
@@ -424,6 +467,7 @@ namespace Amazon.OpsWorks.Model
         /// </summary>
         /// <param name="defaultRootDeviceType">The value to set for the DefaultRootDeviceType property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public CreateStackRequest WithDefaultRootDeviceType(string defaultRootDeviceType)
         {
             this.defaultRootDeviceType = defaultRootDeviceType;

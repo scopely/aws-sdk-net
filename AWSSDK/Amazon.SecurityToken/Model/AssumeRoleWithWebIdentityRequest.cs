@@ -31,19 +31,19 @@ namespace Amazon.SecurityToken.Model
     /// security credentials without including long-term AWS credentials in the application or by deploying server-based proxy services that use
     /// long-term AWS credentials. For more information, see Creating a Mobile Application with Third-Party Sign-In in <i>AWS Security Token
     /// Service</i> .
-    /// </para> <para> The temporary security credentials consist of an access key ID, a secret access key, and a security token. Applications can
-    /// use these temporary security credentials to sign calls to AWS service APIs. The credentials are valid for the duration that you specified
-    /// when calling <c>AssumeRoleWithWebIdentity</c> , which can be from 900 seconds (15 minutes) to 3600 seconds (1 hour). By default, the
-    /// temporary security credentials are valid for 1 hour. </para> <para> The temporary security credentials that are returned from the
-    /// <c>AssumeRoleWithWebIdentity</c> response have the permissions that are associated with the access policy of the role being assumed and any
-    /// policies that are associated with the AWS resource being accessed. You can further restrict the permissions of the temporary security
-    /// credentials by passing a policy in the request. The resulting permissions are an intersection of both policies. The role's access policy and
-    /// the policy that you passed are evaluated when calls to AWS service APIs are made using the temporary security credentials. </para> <para>
-    /// Before your application can call <c>AssumeRoleWithWebIdentity</c> , you must have an identity token from an identity provider and create a
-    /// role that the application can assume. Typically, to get an identity token, you need to register your application with the identity provider
-    /// and get a unique application ID from that provider. Also, when you create the role that the application assumes, you must specify the
-    /// registered identity provider as a principal (establish trust with the identity provider). For more information, see Creating Temporary
-    /// Security Credentials for Mobile Apps Using Third-Party Identity Providers. </para>
+    /// </para> <para> The temporary security credentials consist of an access key ID, a secret access key, and a security token. Applications
+    /// can use these temporary security credentials to sign calls to AWS service APIs. The credentials are valid for the duration that you
+    /// specified when calling <c>AssumeRoleWithWebIdentity</c> , which can be from 900 seconds (15 minutes) to 3600 seconds (1 hour). By default,
+    /// the temporary security credentials are valid for 1 hour. </para> <para> The temporary security credentials that are returned from the
+    /// <c>AssumeRoleWithWebIdentity</c> response have the permissions that are associated with the access policy of the role being assumed. You can
+    /// further restrict the permissions of the temporary security credentials by passing a policy in the request. The resulting permissions are an
+    /// intersection of the role's access policy and the policy that you passed. These policies and any applicable resource-based policies are
+    /// evaluated when calls to AWS service APIs are made using the temporary security credentials. </para> <para> Before your application can call
+    /// <c>AssumeRoleWithWebIdentity</c> , you must have an identity token from a supported identity provider and create a role that the application
+    /// can assume. The role that your application assumes must trust the identity provider that is associated with the identity token. In other
+    /// words, the identity provider must be specified in the role's trust policy. For more information, see Creating Temporary Security Credentials
+    /// for Mobile Apps Using Third-Party Identity Providers .
+    /// </para>
     /// </summary>
     /// <seealso cref="Amazon.SecurityToken.AmazonSecurityTokenService.AssumeRoleWithWebIdentity"/>
     public class AssumeRoleWithWebIdentityRequest : AmazonWebServiceRequest
@@ -79,6 +79,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="roleArn">The value to set for the RoleArn property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithRoleArn(string roleArn)
         {
             this.roleArn = roleArn;
@@ -122,6 +123,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="roleSessionName">The value to set for the RoleSessionName property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithRoleSessionName(string roleSessionName)
         {
             this.roleSessionName = roleSessionName;
@@ -136,7 +138,7 @@ namespace Amazon.SecurityToken.Model
         }
 
         /// <summary>
-        /// The OAuth 2.0 access token or OpenID Connect id token that is provided by the identity provider. Your application must get this token by
+        /// The OAuth 2.0 access token or OpenID Connect ID token that is provided by the identity provider. Your application must get this token by
         /// authenticating the user who is using your application with a web identity provider before the application makes an
         /// <c>AssumeRoleWithWebIdentity</c> call.
         ///  
@@ -161,6 +163,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="webIdentityToken">The value to set for the WebIdentityToken property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithWebIdentityToken(string webIdentityToken)
         {
             this.webIdentityToken = webIdentityToken;
@@ -175,9 +178,9 @@ namespace Amazon.SecurityToken.Model
         }
 
         /// <summary>
-        /// Specify this value only for OAuth access tokens. Do not specify this value for OpenID Connect id tokens, such as <c>accounts.google.com</c>.
-        /// This is the fully-qualified host component of the domain name of the identity provider. Do not include URL schemes and port numbers.
-        /// Currently, <c>www.amazon.com</c> and <c>graph.facebook.com</c> are supported.
+        /// The fully-qualified host component of the domain name of the identity provider. Specify this value only for OAuth access tokens. Do not
+        /// specify this value for OpenID Connect ID tokens, such as <c>accounts.google.com</c>. Do not include URL schemes and port numbers. Currently,
+        /// <c>www.amazon.com</c> and <c>graph.facebook.com</c> are supported.
         ///  
         /// <para>
         /// <b>Constraints:</b>
@@ -200,6 +203,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="providerId">The value to set for the ProviderId property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithProviderId(string providerId)
         {
             this.providerId = providerId;
@@ -243,6 +247,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="policy">The value to set for the Policy property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithPolicy(string policy)
         {
             this.policy = policy;
@@ -281,6 +286,7 @@ namespace Amazon.SecurityToken.Model
         /// </summary>
         /// <param name="durationSeconds">The value to set for the DurationSeconds property </param>
         /// <returns>this instance</returns>
+        [Obsolete("The With methods are obsolete and will be removed in version 2 of the AWS SDK for .NET. See http://aws.amazon.com/sdkfornet/#version2 for more information.")]
         public AssumeRoleWithWebIdentityRequest WithDurationSeconds(int durationSeconds)
         {
             this.durationSeconds = durationSeconds;
