@@ -32,6 +32,8 @@
 
         public Instance Unmarshall(JsonUnmarshallerContext context)
         {
+            if (context.CurrentTokenType == JsonUnmarshallerContext.TokenType.Null)
+                return null;
             Instance instance = new Instance();
           instance.LayerIds = null;
                         instance.SecurityGroupIds = null;
@@ -138,6 +140,12 @@
               if (context.TestExpression("AvailabilityZone", targetDepth))
               {
                 instance.AvailabilityZone = StringUnmarshaller.GetInstance().Unmarshall(context);
+                continue;
+              }
+  
+              if (context.TestExpression("SubnetId", targetDepth))
+              {
+                instance.SubnetId = StringUnmarshaller.GetInstance().Unmarshall(context);
                 continue;
               }
   

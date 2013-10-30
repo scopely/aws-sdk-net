@@ -948,6 +948,12 @@
         <Hostname>directconnect.ap-southeast-1.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>redshift</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>redshift.ap-southeast-1.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>elastictranscoder</ServiceName>
         <Http>false</Http>
         <Https>true</Https>
@@ -1009,6 +1015,12 @@
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>route53.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>sdb</ServiceName>
+        <Http>true</Http>
+        <Https>true</Https>
+        <Hostname>sdb.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
         <ServiceName>sns</ServiceName>
@@ -1077,10 +1089,22 @@
         <Hostname>swf.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
+        <ServiceName>glacier</ServiceName>
+        <Http>true</Http>
+        <Https>true</Https>
+        <Hostname>glacier.ap-southeast-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
         <ServiceName>directconnect</ServiceName>
         <Http>false</Http>
         <Https>true</Https>
         <Hostname>directconnect.ap-southeast-2.amazonaws.com</Hostname>
+      </Endpoint>
+      <Endpoint>
+        <ServiceName>redshift</ServiceName>
+        <Http>false</Http>
+        <Https>true</Https>
+        <Hostname>redshift.ap-southeast-2.amazonaws.com</Hostname>
       </Endpoint>
       <Endpoint>
         <ServiceName>elastictranscoder</ServiceName>
@@ -1449,6 +1473,7 @@
       <RegionName>eu-west-1</RegionName>
       <RegionName>ap-northeast-1</RegionName>
       <RegionName>ap-southeast-1</RegionName>
+      <RegionName>ap-southeast-2</RegionName>
       <RegionName>sa-east-1</RegionName>
     </Service>
     <Service>
@@ -1604,6 +1629,7 @@
       <RegionName>us-west-2</RegionName>
       <RegionName>eu-west-1</RegionName>
       <RegionName>ap-northeast-1</RegionName>
+      <RegionName>ap-southeast-2</RegionName>
     </Service>
     <Service>
       <Name>directconnect</Name>
@@ -1629,6 +1655,8 @@
       <RegionName>us-west-2</RegionName>
       <RegionName>eu-west-1</RegionName>
       <RegionName>ap-northeast-1</RegionName>
+      <RegionName>ap-southeast-1</RegionName>
+      <RegionName>ap-southeast-2</RegionName>
     </Service>
     <Service>
       <Name>opsworks</Name>

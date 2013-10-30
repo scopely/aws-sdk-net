@@ -21,7 +21,9 @@ using System.IO;
 namespace Amazon.ElasticTranscoder.Model
 {
     /// <summary>
-    /// 
+    /// <para>Presets are templates that contain most of the settings for transcoding media files from one format to another. Elastic Transcoder
+    /// includes some default presets for common formats, for example, several iPod and iPhone versions. You can also create your own presets for
+    /// formats that aren't included among the default presets. You specify which preset you want to use when you create a job.</para>
     /// </summary>
     public class Preset
     {
@@ -150,14 +152,14 @@ namespace Amazon.ElasticTranscoder.Model
         }
 
         /// <summary>
-        /// The container type for the output file. This value must be <c>mp4</c>.
+        /// The container type for the output file. Valid values include <c>mp3</c>, <c>mp4</c>, <c>ogg</c>, <c>ts</c>, and <c>webm</c>.
         ///  
         /// <para>
         /// <b>Constraints:</b>
         /// <list type="definition">
         ///     <item>
         ///         <term>Pattern</term>
-        ///         <description>(^mp4$)|(^ts$)|(^webm$)</description>
+        ///         <description>(^mp4$)|(^ts$)|(^webm$)|(^mp3$)|(^ogg$)</description>
         ///     </item>
         /// </list>
         /// </para>

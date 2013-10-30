@@ -558,23 +558,6 @@ namespace Amazon.ElasticTranscoder
         
         
 
-        /// <summary>
-        /// <para>The ReadPreset operation gets detailed information about a preset.</para>
-        /// </summary>
-        /// 
-        /// <returns>The response from the ReadPreset service method, as returned by AmazonElasticTranscoder.</returns>
-        /// 
-        /// <exception cref="ResourceNotFoundException"/>
-        /// <exception cref="AccessDeniedException"/>
-        /// <exception cref="InternalServiceException"/>
-        /// <exception cref="ValidationException"/>
-        /// <exception cref="IncompatibleVersionException"/>
-        public ReadPresetResponse ReadPreset()
-        {
-            return ReadPreset(new ReadPresetRequest());
-        }
-        
-
         #endregion
     
         #region CreatePipeline
@@ -723,6 +706,9 @@ namespace Amazon.ElasticTranscoder
         #region UpdatePipeline
 
         /// <summary>
+        /// <para> Use the <c>UpdatePipeline</c> operation to update settings for a pipeline. <para><b>IMPORTANT:</b>When you change pipeline settings,
+        /// your changes take effect immediately. Jobs that you have already submitted and that Elastic Transcoder has not started to process are
+        /// affected in addition to jobs that you submit after you change settings. </para> </para>
         /// </summary>
         /// 
         /// <param name="updatePipelineRequest">Container for the necessary parameters to execute the UpdatePipeline service method on
@@ -1017,7 +1003,7 @@ namespace Amazon.ElasticTranscoder
             return result;
         }
         
-        
+
 
         #endregion
     
@@ -1172,23 +1158,6 @@ namespace Amazon.ElasticTranscoder
             return result;
         }
         
-        
-
-        /// <summary>
-        /// <para>The ReadPipeline operation gets detailed information about a pipeline.</para>
-        /// </summary>
-        /// 
-        /// <returns>The response from the ReadPipeline service method, as returned by AmazonElasticTranscoder.</returns>
-        /// 
-        /// <exception cref="ResourceNotFoundException"/>
-        /// <exception cref="AccessDeniedException"/>
-        /// <exception cref="InternalServiceException"/>
-        /// <exception cref="ValidationException"/>
-        /// <exception cref="IncompatibleVersionException"/>
-        public ReadPipelineResponse ReadPipeline()
-        {
-            return ReadPipeline(new ReadPipelineRequest());
-        }
         
 
         #endregion

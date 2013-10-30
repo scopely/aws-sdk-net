@@ -32,6 +32,8 @@
 
         public Stack Unmarshall(JsonUnmarshallerContext context)
         {
+            if (context.CurrentTokenType == JsonUnmarshallerContext.TokenType.Null)
+                return null;
             Stack stack = new Stack();
           stack.Attributes = null;
                         
@@ -59,6 +61,12 @@
               if (context.TestExpression("Region", targetDepth))
               {
                 stack.Region = StringUnmarshaller.GetInstance().Unmarshall(context);
+                continue;
+              }
+  
+              if (context.TestExpression("VpcId", targetDepth))
+              {
+                stack.VpcId = StringUnmarshaller.GetInstance().Unmarshall(context);
                 continue;
               }
   
@@ -109,6 +117,12 @@
               if (context.TestExpression("DefaultAvailabilityZone", targetDepth))
               {
                 stack.DefaultAvailabilityZone = StringUnmarshaller.GetInstance().Unmarshall(context);
+                continue;
+              }
+  
+              if (context.TestExpression("DefaultSubnetId", targetDepth))
+              {
+                stack.DefaultSubnetId = StringUnmarshaller.GetInstance().Unmarshall(context);
                 continue;
               }
   
