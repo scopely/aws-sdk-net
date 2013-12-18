@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 
@@ -170,7 +170,52 @@ namespace Amazon.DynamoDBv2.DocumentModel
 
         #region Public methods
 
+        private const int RETRY_COUNT = 10;
+        private const int INITIAL_BACKOFF_MS = 2;
+        private const int MAXIMUM_BACKOFF_MS = 10000;
+
         internal List<Document> GetNextSetHelper(bool isAsync)
+        {
+            var retryCount = 0;
+
+            while (true)
+            {
+                try
+                {
+                    return GetNextSetHelperInternal(isAsync);
+                }
+                catch (ProvisionedThroughputExceededException)
+                {
+                    if (ShouldRethrow(retryCount))
+                    {
+                        throw;
+                    }
+                }
+                catch (AmazonServiceException)
+                {
+                    if (ShouldRethrow(retryCount))
+                    {
+                        throw;
+                    }
+                }
+
+                retryCount++;
+            }
+        }
+
+        private bool ShouldRethrow(int retryCount)
+        {
+            if (retryCount == RETRY_COUNT)
+            {
+                return true;
+            }
+
+            Thread.Sleep((int)Math.Min(Math.Pow(2, retryCount) * INITIAL_BACKOFF_MS, MAXIMUM_BACKOFF_MS));
+
+            return false;
+        }
+
+        private List<Document> GetNextSetHelperInternal(bool isAsync)
         {
             List<Document> ret = new List<Document>();
 
