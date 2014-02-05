@@ -89,6 +89,7 @@ namespace Amazon.Runtime.Internal.Util
             }
             set
             {
+                
                 throw new NotSupportedException();
             }
         }
@@ -143,6 +144,14 @@ namespace Amazon.Runtime.Internal.Util
             get
             {
                 return _size;
+            }
+        }
+
+        public override long Position
+        {
+            get
+            {
+                return _currentPosition;
             }
         }
 

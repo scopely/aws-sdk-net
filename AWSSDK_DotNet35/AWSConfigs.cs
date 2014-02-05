@@ -40,6 +40,35 @@ namespace Amazon
     {
         internal static event PropertyChangedEventHandler PropertyChanged;
 
+        #region Region
+
+        /// <summary>
+        /// Key for the AWSRegion property.
+        /// <seealso cref="Amazon.AWSConfigs.AWSRegion"/>
+        /// </summary>
+        public const string AWSRegionKey = "AWSRegion";
+
+        /// <summary>
+        /// Configures the default AWS region for clients which have not explicitly specified a region.
+        /// Changes to this setting will only take effect for newly constructed instances of AWS clients.
+        /// 
+        /// This setting can be configured through the App.config. For example:
+        /// <code>
+        /// &lt;appSettings>
+        ///   &lt;add key="AWSRegion" value="us-west-2"/>
+        /// &lt;appSettings>
+        /// </code>
+        /// </summary>
+        public static string AWSRegion
+        {
+            get { return _awsRegion; }
+            set { _awsRegion = value; }
+        }
+
+        private static string _awsRegion = GetConfig(AWSRegionKey);
+
+        #endregion
+
         #region Logging
 
         /// <summary>
@@ -152,6 +181,32 @@ namespace Amazon
 
         #endregion
 
+        #region Endpoint Configuration
+
+        /// <summary>
+        /// Key for the EndpointDefinition property.
+        /// <seealso cref="Amazon.AWSConfigs.LogMetrics"/>
+        /// </summary>
+        public const string EndpointDefinitionKey = "AWSEndpointDefinition";
+
+        /// <summary>
+        /// Configures if the SDK should use a custom configuration file that defines the regions and endpoints.
+        /// <code>
+        /// &lt;appSettings&gt;
+        ///   &lt;add key="AWSEndpointDefinition" value="c:\config\endpoints.xml"/&gt;
+        /// &lt;/appSettings&gt;
+        /// </code>
+        /// </summary>
+        public static string EndpointDefinition
+        {
+            get { return _endpointDefinition; }
+            set { _endpointDefinition = value; }
+        }
+
+        private static string _endpointDefinition = GetConfig(EndpointDefinitionKey);
+
+        #endregion
+
         #region DynamoDBContext TableNamePrefix
 
         /// <summary>
@@ -159,7 +214,7 @@ namespace Amazon
         /// <seealso cref="Amazon.AWSConfigs.DynamoDBContextTableNamePrefix"/>
         /// </summary>
         public const string DynamoDBContextTableNamePrefixKey = "AWS.DynamoDBContext.TableNamePrefix";
-
+        
         /// <summary>
         /// Configures the default TableNamePrefix that the DynamoDBContext will use if
         /// not manually configured.
@@ -182,6 +237,73 @@ namespace Amazon
         private static string _dynamoDBContextTableNamePrefix = GetConfig(DynamoDBContextTableNamePrefixKey);
 
         #endregion
+
+        #region S3 SignatureV4
+
+        /// <summary>
+        /// Key for the S3UseSignatureVersion4 property.
+        /// <seealso cref="Amazon.AWSConfigs.S3UseSignatureVersion4"/>
+        /// </summary>
+        public const string S3UseSignatureVersion4Key = "AWS.S3.UseSignatureVersion4";
+
+        /// <summary>
+        /// Configures if the S3 client should use Signature Version 4 signing with requests.
+        /// By default, this setting is false, though Signature Version 4 may be used by default
+        /// in some cases or with some regions. When the setting is true, Signature Version 4
+        /// will be used for all requests.
+        /// 
+        /// Changes to this setting will only take effect in newly-constructed clients.
+        /// 
+        /// The setting can be configured through App.config, for example:
+        /// <code>
+        /// &lt;appSettings&gt;
+        ///   &lt;add key="AWS.S3.UseSignatureVersion4" value="true"/&gt;
+        /// &lt;/appSettings&gt;
+        /// </code>
+        /// </summary>
+        public static bool S3UseSignatureVersion4
+        {
+            get { return _s3UseSignatureVersion4; }
+            set { _s3UseSignatureVersion4 = value; }
+        }
+
+        private static bool _s3UseSignatureVersion4 = GetConfigBool(S3UseSignatureVersion4Key);
+
+        #endregion
+
+        #region EC2 SignatureV4
+
+        /// <summary>
+        /// Key for the EC2UseSignatureVersion4 property.
+        /// <seealso cref="Amazon.AWSConfigs.EC2UseSignatureVersion4"/>
+        /// </summary>
+        public const string EC2UseSignatureVersion4Key = "AWS.EC2.UseSignatureVersion4";
+
+        /// <summary>
+        /// Configures if the EC2 client should use Signature Version 4 signing with requests.
+        /// By default, this setting is false, though Signature Version 4 may be used by default
+        /// in some cases or with some regions. When the setting is true, Signature Version 4
+        /// will be used for all requests.
+        /// 
+        /// Changes to this setting will only take effect in newly-constructed clients.
+        /// 
+        /// The setting can be configured through App.config, for example:
+        /// <code>
+        /// &lt;appSettings&gt;
+        ///   &lt;add key="AWS.EC2.UseSignatureVersion4" value="true"/&gt;
+        /// &lt;/appSettings&gt;
+        /// </code>
+        /// </summary>
+        public static bool EC2UseSignatureVersion4
+        {
+            get { return _ec2UseSignatureVersion4; }
+            set { _ec2UseSignatureVersion4 = value; }
+        }
+
+        private static bool _ec2UseSignatureVersion4 = GetConfigBool(EC2UseSignatureVersion4Key);
+
+        #endregion
+
 
         #region Private general methods
 

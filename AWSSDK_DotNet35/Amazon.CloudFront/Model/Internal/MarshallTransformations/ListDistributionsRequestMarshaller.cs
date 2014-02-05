@@ -43,7 +43,7 @@ namespace Amazon.CloudFront.Model.Internal.MarshallTransformations
 
 
             request.HttpMethod = "GET";
-            string uriResourcePath = "2013-09-27/distribution?Marker={Marker}&MaxItems={MaxItems}"; 
+            string uriResourcePath = "2013-11-11/distribution?Marker={Marker}&MaxItems={MaxItems}"; 
             uriResourcePath = uriResourcePath.Replace("{Marker}", listDistributionsRequest.IsSetMarker() ? listDistributionsRequest.Marker.ToString() : "" ); 
             uriResourcePath = uriResourcePath.Replace("{MaxItems}", listDistributionsRequest.IsSetMaxItems() ? listDistributionsRequest.MaxItems.ToString() : "" ); 
 
@@ -58,9 +58,10 @@ namespace Amazon.CloudFront.Model.Internal.MarshallTransformations
                 foreach (string s in queryString.Split('&', ';')) 
                 {
                     string[] nameValuePair = s.Split('=');
-                    if (nameValuePair.Length == 2 && nameValuePair[1].Length > 0) 
+                    if (nameValuePair.Length == 2) 
                     {
-                        request.Parameters.Add(nameValuePair[0], nameValuePair[1]);
+                        if (nameValuePair[1].Length > 0)
+                            request.Parameters.Add(nameValuePair[0], nameValuePair[1]);
                     }
                     else
                     {

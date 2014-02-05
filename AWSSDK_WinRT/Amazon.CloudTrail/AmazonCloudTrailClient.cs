@@ -185,7 +185,6 @@ namespace Amazon.CloudTrail
         /// <returns>The response from the CreateTrail service method, as returned by AmazonCloudTrail.</returns>
         /// 
         /// <exception cref="T:Amazon.CloudTrail.Model.S3BucketDoesNotExistException" />
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidS3PrefixException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.TrailAlreadyExistsException" />
@@ -198,13 +197,11 @@ namespace Amazon.CloudTrail
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<CreateTrailResponse> CreateTrailAsync(CreateTrailRequest createTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<CreateTrailResponse> CreateTrailAsync(CreateTrailRequest createTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new CreateTrailRequestMarshaller();
             var unmarshaller = CreateTrailResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, CreateTrailRequest, CreateTrailResponse>(createTrailRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, CreateTrailRequest, CreateTrailResponse>(createTrailRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal DeleteTrailResponse DeleteTrail(DeleteTrailRequest request)
@@ -229,19 +226,16 @@ namespace Amazon.CloudTrail
         /// 
         /// <returns>The response from the DeleteTrail service method, as returned by AmazonCloudTrail.</returns>
         /// 
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.TrailNotFoundException" />
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<DeleteTrailResponse> DeleteTrailAsync(DeleteTrailRequest deleteTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<DeleteTrailResponse> DeleteTrailAsync(DeleteTrailRequest deleteTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new DeleteTrailRequestMarshaller();
             var unmarshaller = DeleteTrailResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, DeleteTrailRequest, DeleteTrailResponse>(deleteTrailRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, DeleteTrailRequest, DeleteTrailResponse>(deleteTrailRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal DescribeTrailsResponse DescribeTrails(DescribeTrailsRequest request)
@@ -265,18 +259,14 @@ namespace Amazon.CloudTrail
         /// AmazonCloudTrail.</param>
         /// 
         /// <returns>The response from the DescribeTrails service method, as returned by AmazonCloudTrail.</returns>
-        /// 
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<DescribeTrailsResponse> DescribeTrailsAsync(DescribeTrailsRequest describeTrailsRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<DescribeTrailsResponse> DescribeTrailsAsync(DescribeTrailsRequest describeTrailsRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new DescribeTrailsRequestMarshaller();
             var unmarshaller = DescribeTrailsResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, DescribeTrailsRequest, DescribeTrailsResponse>(describeTrailsRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, DescribeTrailsRequest, DescribeTrailsResponse>(describeTrailsRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal GetTrailStatusResponse GetTrailStatus(GetTrailStatusRequest request)
@@ -302,19 +292,16 @@ namespace Amazon.CloudTrail
         /// 
         /// <returns>The response from the GetTrailStatus service method, as returned by AmazonCloudTrail.</returns>
         /// 
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.TrailNotFoundException" />
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<GetTrailStatusResponse> GetTrailStatusAsync(GetTrailStatusRequest getTrailStatusRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<GetTrailStatusResponse> GetTrailStatusAsync(GetTrailStatusRequest getTrailStatusRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new GetTrailStatusRequestMarshaller();
             var unmarshaller = GetTrailStatusResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, GetTrailStatusRequest, GetTrailStatusResponse>(getTrailStatusRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, GetTrailStatusRequest, GetTrailStatusResponse>(getTrailStatusRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal StartLoggingResponse StartLogging(StartLoggingRequest request)
@@ -339,22 +326,16 @@ namespace Amazon.CloudTrail
         /// 
         /// <returns>The response from the StartLogging service method, as returned by AmazonCloudTrail.</returns>
         /// 
-        /// <exception cref="T:Amazon.CloudTrail.Model.S3BucketDoesNotExistException" />
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
-        /// <exception cref="T:Amazon.CloudTrail.Model.InsufficientSnsTopicPolicyException" />
-        /// <exception cref="T:Amazon.CloudTrail.Model.InsufficientS3BucketPolicyException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.TrailNotFoundException" />
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<StartLoggingResponse> StartLoggingAsync(StartLoggingRequest startLoggingRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<StartLoggingResponse> StartLoggingAsync(StartLoggingRequest startLoggingRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new StartLoggingRequestMarshaller();
             var unmarshaller = StartLoggingResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, StartLoggingRequest, StartLoggingResponse>(startLoggingRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, StartLoggingRequest, StartLoggingResponse>(startLoggingRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal StopLoggingResponse StopLogging(StopLoggingRequest request)
@@ -380,19 +361,16 @@ namespace Amazon.CloudTrail
         /// 
         /// <returns>The response from the StopLogging service method, as returned by AmazonCloudTrail.</returns>
         /// 
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.TrailNotFoundException" />
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<StopLoggingResponse> StopLoggingAsync(StopLoggingRequest stopLoggingRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<StopLoggingResponse> StopLoggingAsync(StopLoggingRequest stopLoggingRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new StopLoggingRequestMarshaller();
             var unmarshaller = StopLoggingResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, StopLoggingRequest, StopLoggingResponse>(stopLoggingRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, StopLoggingRequest, StopLoggingResponse>(stopLoggingRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
  
 		internal UpdateTrailResponse UpdateTrail(UpdateTrailRequest request)
@@ -421,7 +399,6 @@ namespace Amazon.CloudTrail
         /// <returns>The response from the UpdateTrail service method, as returned by AmazonCloudTrail.</returns>
         /// 
         /// <exception cref="T:Amazon.CloudTrail.Model.S3BucketDoesNotExistException" />
-        /// <exception cref="T:Amazon.CloudTrail.Model.InternalErrorException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidS3PrefixException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidTrailNameException" />
         /// <exception cref="T:Amazon.CloudTrail.Model.InvalidS3BucketNameException" />
@@ -433,13 +410,11 @@ namespace Amazon.CloudTrail
         /// <param name="cancellationToken">
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
-		public async Task<UpdateTrailResponse> UpdateTrailAsync(UpdateTrailRequest updateTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<UpdateTrailResponse> UpdateTrailAsync(UpdateTrailRequest updateTrailRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var marshaller = new UpdateTrailRequestMarshaller();
             var unmarshaller = UpdateTrailResponseUnmarshaller.GetInstance();
-            var response = await Invoke<IRequest, UpdateTrailRequest, UpdateTrailResponse>(updateTrailRequest, marshaller, unmarshaller, signer, cancellationToken)
-                .ConfigureAwait(continueOnCapturedContext: false);
-            return response;
+            return Invoke<IRequest, UpdateTrailRequest, UpdateTrailResponse>(updateTrailRequest, marshaller, unmarshaller, signer, cancellationToken);
         }
     }
 }

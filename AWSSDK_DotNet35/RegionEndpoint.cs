@@ -41,8 +41,6 @@ namespace Amazon
     public class RegionEndpoint
     {
         const string EMBEDDED_RESOURCE_OF_REGIONS_FILE = "AWSSDK.endpoints.xml";
-        const string CLOUDFRONT_LOCATION_OF_REGIONS_FILE = "https://d3s62xsdspbbg2.cloudfront.net/endpoints.xml";
-        const string S3_LOCATION_OF_REGIONS_FILE = "https://aws-sdk-configurations.s3.amazonaws.com/endpoints.xml";
 
         const int MAX_DOWNLOAD_RETRIES = 3;
 
@@ -51,7 +49,6 @@ namespace Amazon
         // Dictionary of regions by system name
         private static Dictionary<string, RegionEndpoint> hashBySystemName = new Dictionary<string, RegionEndpoint>();
 
-        static bool loadedFromWeb = false;
         static bool loaded = false;
         static readonly object LOCK_OBJECT = new object();
 
@@ -91,14 +88,19 @@ namespace Amazon
         public static readonly RegionEndpoint APSoutheast2 = NewEndpoint("ap-southeast-2", "Asia Pacific (Sydney)");
 
         /// <summary>
-        /// The South America (Sao Paulo)endpoint.
+        /// The South America (Sao Paulo) endpoint.
         /// </summary>
         public static readonly RegionEndpoint SAEast1 = NewEndpoint("sa-east-1", "South America (Sao Paulo)");
 
         /// <summary>
-        /// The US GovCloud West (Oregon)endpoint.
+        /// The US GovCloud West (Oregon) endpoint.
         /// </summary>
         public static readonly RegionEndpoint USGovCloudWest1 = NewEndpoint("us-gov-west-1", "US GovCloud West (Oregon)");
+
+        /// <summary>
+        /// The China (Beijing) endpoint.
+        /// </summary>
+        public static readonly RegionEndpoint CNNorth1 = NewEndpoint("cn-north-1", "China (Beijing)", "amazonaws.com.cn");
 
         // Creates a new RegionEndpoint and stores it in the hash
         private static RegionEndpoint NewEndpoint(string systemName, string displayName)
@@ -108,6 +110,14 @@ namespace Amazon
             return regionEndpoint;
         }
 
+        // Creates a new RegionEndpoint and stores it in the hash, uses a non-standard domain
+        private static RegionEndpoint NewEndpoint(string systemName, string displayName, string domain)
+        {
+            var regionEndpoint = new RegionEndpoint(systemName, displayName);
+            regionEndpoint.regionDomain = domain;
+            hashBySystemName.Add(regionEndpoint.SystemName, regionEndpoint);
+            return regionEndpoint;
+        }
 
         /// <summary>
         /// Enumerate through all the regions.
@@ -125,26 +135,39 @@ namespace Amazon
         public static RegionEndpoint GetBySystemName(string systemName)
         {
             if (!RegionEndpoint.loaded)
-                RegionEndpoint.LoadEndpointDefinitionFromEmbeddedResource();
+                RegionEndpoint.LoadEndpointDefinitions();
 
             RegionEndpoint region = null;
             if (!hashBySystemName.TryGetValue(systemName.ToLower(CultureInfo.InvariantCulture), out region))
             {
-                // If the region is not found check to see if downloading the latest definitions from the web
-                // contains a definition for the region.
-                if (!RegionEndpoint.loadedFromWeb)
-                {
-                    LoadEndpointDefinitionFromWeb();
-                    return GetBySystemName(systemName);
-                }
-
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "No region found for name {0}.", systemName), "systemName");
+                if (systemName.StartsWith("cn-"))
+                    return NewEndpoint(systemName, "China (Unknown)", "amazonaws.com.cn");
+                return NewEndpoint(systemName, "Unknown");
             }
 
             return region;
         }
 
-        static void LoadEndpointDefinitionFromEmbeddedResource()
+        static void LoadEndpointDefinitions()
+        {
+            var configuredValue = AWSConfigs.EndpointDefinition;
+            if (string.IsNullOrEmpty(configuredValue))
+            {
+                LoadEndpointDefinitionsFromEmbeddedResource();
+            }
+            else if (AWSConfigs.EndpointDefinition.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                LoadEndpointDefinitionFromWeb(AWSConfigs.EndpointDefinition);
+            }
+#if BCL
+            else
+            {
+                LoadEndpointDefinitionFromFilePath(AWSConfigs.EndpointDefinition);
+            }
+#endif
+        }
+
+        static void LoadEndpointDefinitionsFromEmbeddedResource()
         {
             Assembly assembly = Amazon.Util.TypeFactory.GetTypeInfo(typeof(RegionEndpoint)).Assembly;
             using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(EMBEDDED_RESOURCE_OF_REGIONS_FILE)))
@@ -153,26 +176,29 @@ namespace Amazon
             }
         }
 
-        static void LoadEndpointDefinitionFromWeb()
+#if BCL
+        static void LoadEndpointDefinitionFromFilePath(string path)
+        {
+            if (!System.IO.File.Exists(path))
+                throw new AmazonServiceException(string.Format("Local endpoint configuration file {0} override was not found.", path));
+
+            using (StreamReader reader = new StreamReader(path))
+            {
+                LoadEndpointDefinitions(reader);
+            }
+        }
+#endif
+
+        static void LoadEndpointDefinitionFromWeb(string url)
         {
             int retries = 0;
             while (retries < MAX_DOWNLOAD_RETRIES)
             {
                 try
                 {
-                    HttpWebResponse response = null;
-                    try
-                    {
-                        HttpWebRequest request = WebRequest.Create(CLOUDFRONT_LOCATION_OF_REGIONS_FILE) as HttpWebRequest;
-                        var asynResult = request.BeginGetResponse(null, null);
-                        response = request.EndGetResponse(asynResult) as HttpWebResponse;
-                    }
-                    catch (Exception)
-                    {
-                        HttpWebRequest request = WebRequest.Create(S3_LOCATION_OF_REGIONS_FILE) as HttpWebRequest;
-                        var asynResult = request.BeginGetResponse(null, null);
-                        response = request.EndGetResponse(asynResult) as HttpWebResponse;
-                    }
+                    HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                    var asynResult = request.BeginGetResponse(null, null);
+                    HttpWebResponse response = request.EndGetResponse(asynResult) as HttpWebResponse;
 
                     using (response)
                     {
@@ -180,11 +206,7 @@ namespace Amazon
                         {
                             lock (LOCK_OBJECT)
                             {
-                                // If we are loading the latest definition from online then unload the currently loaded definition that is old.
-                                UnloadEndpointDefinitions();
-
                                 LoadEndpointDefinitions(reader);
-                                loadedFromWeb = true;
                                 return;
                             }
                         }
@@ -194,12 +216,12 @@ namespace Amazon
                 {
                     retries++;
                     if (retries == MAX_DOWNLOAD_RETRIES)
-                        throw new AmazonServiceException("Error downloading regions definition file.", e);
+                        throw new AmazonServiceException(string.Format("Error downloading regions definition file from {0}.", url), e);
                 }
 
                 int delay = (int)(Math.Pow(4, retries) * 100);
                 delay = Math.Min(delay, 30 * 1000);
-                Amazon.Util.AWSSDKUtils.Sleep(delay);
+                Util.AWSSDKUtils.Sleep(delay);
             }
         }
 
@@ -207,7 +229,7 @@ namespace Amazon
         /// Parse the endpoint definition.  This method is only meant to be called directly for testing purposes.
         /// </summary>
         /// <param name="reader">A reader of the endpoint definitions</param>
-        public static void LoadEndpointDefinitions(TextReader reader)
+        public static void LoadEndpointDefinitions(StreamReader reader)
         {
             if (loaded)
             {
@@ -226,12 +248,16 @@ namespace Amazon
                 {
                     var regionSystemName = xmlRegion.Element("Name").Value;
 
+                    var regionDomainNode = xmlRegion.Element("Domain");
+
                     RegionEndpoint region = null;
                     // This version of the SDK doesn't have a constant yet for the new region
                     // so go ahead and add a new region that users can lookup by it's system name.
                     if (!RegionEndpoint.hashBySystemName.TryGetValue(regionSystemName, out region))
                     {
                         region = new RegionEndpoint(regionSystemName, regionSystemName);
+                        if (regionDomainNode != null)
+                            region.regionDomain = regionDomainNode.Value;
                         RegionEndpoint.hashBySystemName[regionSystemName] = region;
                     }
 
@@ -248,8 +274,6 @@ namespace Amazon
                         bool http = false;
                         if (xmlEndpoint.Element("Http") is XElement)
                             http = bool.Parse(xmlEndpoint.Element("Http").Value);
-
-
 
                         if (region.endpoints == null)
                             region.endpoints = new Dictionary<string, Endpoint>();
@@ -280,6 +304,7 @@ namespace Amazon
 
         #endregion
 
+        string regionDomain = "amazonaws.com";
         Dictionary<string, Endpoint> endpoints;
         private RegionEndpoint(string systemName, string displayName)
         {
@@ -314,23 +339,20 @@ namespace Amazon
         public Endpoint GetEndpointForService(string serviceName)
         {
             if (!RegionEndpoint.loaded)
-                RegionEndpoint.LoadEndpointDefinitionFromEmbeddedResource();
+                RegionEndpoint.LoadEndpointDefinitions();
 
             Endpoint endpoint = null;
-            if (!this.endpoints.TryGetValue(serviceName, out endpoint))
+            if (this.endpoints ==null || !this.endpoints.TryGetValue(serviceName, out endpoint))
             {
-                // If the endpoint is not found check to see if downloading the latest definitions from the web
-                // contains a definition for the endpoint.
-                if (!RegionEndpoint.loadedFromWeb)
-                {
-                    LoadEndpointDefinitionFromWeb();
-                    return GetEndpointForService(serviceName);
+                endpoint = GuessEndpointForService(serviceName);
                 }
 
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "No endpoint found for service {0} for region {1}.", serviceName, this.DisplayName), "serviceName");
-            }
-
             return endpoint;
+        }
+
+        public Endpoint GuessEndpointForService(string serviceName)
+        {
+            return new Endpoint(String.Format("{0}.{1}.{2}", serviceName, SystemName, regionDomain), true, false);
         }
 
         public override string ToString()
